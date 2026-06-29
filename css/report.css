@@ -1,0 +1,493 @@
+/* Report Controls */
+.report-controls-panel {
+  width: 100%;
+}
+
+.controls-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-end;
+  padding: 1.25rem;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 180px;
+}
+
+.control-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.control-group select {
+  padding: 0.6rem 0.85rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  outline: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.control-group select:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.control-group select:focus {
+  border-color: var(--accent-primary);
+}
+
+.btn-recompile {
+  padding: 0.6rem 1.25rem;
+}
+
+/* Report Paper Sheet Simulator */
+.report-sheet-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 3rem;
+}
+
+.report-sheet {
+  width: 100%;
+  max-width: 850px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 3.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* Light Theme overrides for printing/clean viewing */
+.report-sheet.light-theme {
+  background: #ffffff;
+  color: #1f2937;
+  border-color: #e5e7eb;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.report-sheet.light-theme .doc-title {
+  color: #111827;
+}
+
+.report-sheet.light-theme .doc-subtitle, 
+.report-sheet.light-theme .doc-meta, 
+.report-sheet.light-theme .section-heading,
+.report-sheet.light-theme .doc-stat-lbl,
+.report-sheet.light-theme .doc-table th {
+  color: #4b5563;
+}
+
+.report-sheet.light-theme .doc-table th {
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.report-sheet.light-theme .doc-table td {
+  color: #1f2937;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.report-sheet.light-theme .doc-stat-card {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+.report-sheet.light-theme .doc-stat-val {
+  color: #111827;
+}
+
+.report-sheet.light-theme .doc-divider {
+  border-color: #e5e7eb;
+}
+
+.report-sheet.light-theme .doc-chart-box {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+.report-sheet.light-theme .doc-chart-box h4 {
+  color: #1f2937;
+}
+
+/* Document layout parts */
+.report-doc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.doc-brand {
+  font-family: var(--font-header);
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.text-emerald {
+  color: var(--accent-primary);
+}
+
+.doc-meta {
+  color: var(--text-secondary);
+  text-align: right;
+  line-height: 1.4;
+}
+
+.doc-divider {
+  border: 0;
+  border-top: 1px solid var(--border-color);
+  margin: 0;
+}
+
+.doc-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.doc-title {
+  font-family: var(--font-header);
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.doc-subtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.doc-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section-heading {
+  font-family: var(--font-header);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+}
+
+/* Report KPI indicators */
+.doc-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1rem;
+}
+
+.doc-stat-card {
+  padding: 1.25rem 1rem;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.25rem;
+}
+
+.doc-stat-val {
+  font-family: var(--font-header);
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.doc-stat-lbl {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Charts grid in reports */
+.doc-charts {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 650px) {
+  .doc-charts {
+    grid-template-columns: 1fr;
+  }
+}
+
+.doc-chart-box {
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.doc-chart-box h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.doc-canvas-wrapper {
+  position: relative;
+  height: 180px;
+  width: 100%;
+}
+
+/* Report Table */
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.doc-table th {
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border-color);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.doc-table td {
+  padding: 0.85rem 0.75rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* AI Summary Generator UI box */
+.ai-summary-widget {
+  background: rgba(16, 185, 129, 0.03);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+  gap: 1.25rem !important;
+}
+
+.ai-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.ai-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ai-title-wrapper h3 {
+  font-family: var(--font-header);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ai-sparkle {
+  color: var(--accent-primary);
+  font-size: 1.1rem;
+  animation: pulse 2s infinite;
+}
+
+.btn-ai-generate {
+  padding: 0.5rem 1rem;
+  background: var(--accent-gradient);
+  border: none;
+  border-radius: var(--border-radius-md);
+  color: var(--bg-primary);
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: var(--transition-fast);
+}
+
+.btn-ai-generate:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+}
+
+.btn-ai-generate i {
+  transition: transform 1s linear;
+}
+
+.btn-ai-generate.loading i {
+  animation: spin 1s infinite linear;
+}
+
+.ai-prompt-preview {
+  display: none; /* Shown dynamically during prompt display */
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.75rem;
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ai-prompt-preview code {
+  color: var(--accent-secondary);
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.ai-output-box {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 1.25rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  transition: border-color var(--transition-fast);
+}
+
+.ai-output-box.generating {
+  border-color: rgba(6, 182, 212, 0.4);
+  color: var(--text-primary);
+  animation: borderGlow 1.5s infinite ease-in-out;
+}
+
+.ai-output-box p.placeholder-text {
+  font-style: italic;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.ai-output-box blockquote {
+  border-left: 3px solid var(--accent-primary);
+  padding-left: 1rem;
+  margin: 0.75rem 0;
+  color: var(--text-primary);
+  font-style: italic;
+}
+
+/* Signatures & Stamps */
+.doc-footer {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.signature-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.sig-line {
+  width: 180px;
+  border-top: 1px solid var(--text-muted);
+  opacity: 0.5;
+}
+
+.stamp-block {
+  border: 2px dashed rgba(16, 185, 129, 0.3);
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--border-radius-sm);
+  color: var(--accent-primary);
+  font-weight: 700;
+  font-family: var(--font-header);
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+  transform: rotate(-3deg);
+  opacity: 0.7;
+}
+
+/* Animations */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.7; }
+}
+
+@keyframes borderGlow {
+  0% { box-shadow: 0 0 5px rgba(6, 182, 212, 0.1); }
+  50% { box-shadow: 0 0 15px rgba(6, 182, 212, 0.25); }
+  100% { box-shadow: 0 0 5px rgba(6, 182, 212, 0.1); }
+}
+
+/* Print CSS overrides */
+@media print {
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    min-height: 0 !important;
+  }
+  .sidebar, .top-bar, .report-controls-panel, .no-print, .btn-ai-generate, .ai-prompt-preview {
+    display: none !important;
+  }
+  .main-content {
+    margin-left: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+  .report-sheet-container {
+    padding-bottom: 0 !important;
+  }
+  .report-sheet {
+    max-width: 100% !important;
+    background: #fff !important;
+    color: #000 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 1.5rem !important;
+  }
+  .no-print-bg {
+    background: transparent !important;
+    border-color: #ddd !important;
+    padding: 1rem 0 !important;
+  }
+  .doc-stat-card, .doc-chart-box {
+    background: transparent !important;
+    border-color: #ddd !important;
+    color: #000 !important;
+  }
+  .doc-stat-val {
+    color: #000 !important;
+  }
+  .ai-output-box {
+    background: transparent !important;
+    border-color: #eee !important;
+    color: #333 !important;
+  }
+}

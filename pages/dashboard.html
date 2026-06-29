@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — ImpactLens</title>
+  <meta name="description" content="View team sustainability stats, carbon offset trends, and logged actions. Aligned with SDG 12 & 13.">
+  
+  <!-- FontAwesome & Chart.js CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-leaf"></i>
+        </div>
+        <div class="brand-name">Impact<span>Lens</span></div>
+      </div>
+      
+      <nav style="flex-grow: 1;">
+        <ul class="nav-menu">
+          <li class="nav-item active">
+            <a href="dashboard.html" id="nav-dashboard">
+              <i class="fa-solid fa-chart-pie"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="form.html" id="nav-form">
+              <i class="fa-solid fa-circle-plus"></i>
+              <span>Log Activity</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="report.html" id="nav-report">
+              <i class="fa-solid fa-file-invoice"></i>
+              <span>Impact Report</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="leaderboard.html" id="nav-leaderboard">
+              <i class="fa-solid fa-ranking-star"></i>
+              <span>Leaderboard</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <a href="../index.html" style="text-decoration: none; color: inherit; display: block; margin-bottom: 0.75rem; font-size: 0.85rem; padding-left: 0.75rem; color: var(--text-secondary); transition: var(--transition-fast);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">
+          <i class="fa-solid fa-arrow-left-long"></i> Back to Landing
+        </a>
+        <div class="team-card">
+          <div class="team-avatar">L5</div>
+          <div class="team-info">
+            <span class="team-name">Team Lumen</span>
+            <span class="team-role">Sustainability Crew</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content fade-in">
+      
+      <!-- Top Bar -->
+      <section class="top-bar">
+        <div class="page-title-container">
+          <h1 class="page-title" id="dashboard-heading">Lumen Impact Dashboard</h1>
+          <p class="page-subtitle">Tracking climate action and responsible consumption metrics.</p>
+        </div>
+        <div class="top-bar-actions">
+          <div class="date-badge">
+            <i class="fa-regular fa-calendar"></i>
+            <span id="current-date">June 30, 2026</span>
+          </div>
+          <a href="form.html" class="btn-primary" id="btn-log-action">
+            <i class="fa-solid fa-plus"></i> Log Activity
+          </a>
+        </div>
+      </section>
+
+      <!-- KPI Summary Cards Row -->
+      <section class="kpi-grid">
+        <!-- Card 1: Carbon Offset -->
+        <div class="glass-card kpi-card glow-card" id="kpi-co2">
+          <div class="kpi-header">
+            <div class="kpi-icon-wrapper" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2);">
+              <i class="fa-solid fa-cloud-arrow-down" style="color: var(--accent-primary);"></i>
+            </div>
+            <span class="kpi-trend positive"><i class="fa-solid fa-arrow-up"></i> 18.2%</span>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value" id="val-co2">0.00</span>
+            <span class="kpi-unit">kg CO2e</span>
+            <h3 class="kpi-title">Total CO2 Saved</h3>
+          </div>
+          <div class="kpi-footer">
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="progress-co2" style="width: 54%;"></div>
+            </div>
+            <span class="progress-label">Goal Progress: 54%</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Waste Recycled -->
+        <div class="glass-card kpi-card" id="kpi-waste">
+          <div class="kpi-header">
+            <div class="kpi-icon-wrapper" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.15);">
+              <i class="fa-solid fa-recycle" style="color: #10B981;"></i>
+            </div>
+            <span class="kpi-trend positive"><i class="fa-solid fa-arrow-up"></i> 10.5%</span>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value" id="val-waste">0</span>
+            <span class="kpi-unit">kg</span>
+            <h3 class="kpi-title">Waste Diverted</h3>
+          </div>
+          <div class="kpi-footer">
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="progress-waste" style="width: 60%; background: #10B981;"></div>
+            </div>
+            <span class="progress-label">Goal Progress: 60%</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Electricity Saved -->
+        <div class="glass-card kpi-card" id="kpi-energy">
+          <div class="kpi-header">
+            <div class="kpi-icon-wrapper" style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.15);">
+              <i class="fa-solid fa-bolt" style="color: #F59E0B;"></i>
+            </div>
+            <span class="kpi-trend positive"><i class="fa-solid fa-arrow-up"></i> 14.3%</span>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value" id="val-energy">0</span>
+            <span class="kpi-unit">kWh</span>
+            <h3 class="kpi-title">Energy Conserved</h3>
+          </div>
+          <div class="kpi-footer">
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="progress-energy" style="width: 46%; background: #F59E0B;"></div>
+            </div>
+            <span class="progress-label">Goal Progress: 46%</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Distance Biked -->
+        <div class="glass-card kpi-card" id="kpi-biked">
+          <div class="kpi-header">
+            <div class="kpi-icon-wrapper" style="background: rgba(59, 130, 246, 0.08); border-color: rgba(59, 130, 246, 0.15);">
+              <i class="fa-solid fa-bicycle" style="color: #3B82F6;"></i>
+            </div>
+            <span class="kpi-trend positive"><i class="fa-solid fa-arrow-up"></i> 8.9%</span>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value" id="val-biked">0</span>
+            <span class="kpi-unit">km</span>
+            <h3 class="kpi-title">Eco-Commuting</h3>
+          </div>
+          <div class="kpi-footer">
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="progress-biked" style="width: 80%; background: #3B82F6;"></div>
+            </div>
+            <span class="progress-label">Goal Progress: 80%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Charts Grid -->
+      <section class="charts-grid">
+        <!-- Chart 1: CO2 Offset Over Time -->
+        <div class="glass-card chart-container">
+          <div class="chart-header">
+            <h3>CO2 Offset Accumulation</h3>
+            <span class="chart-subtitle">Cumulative carbon avoidance in January 2026</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="co2TrendChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Category Breakdown -->
+        <div class="glass-card chart-container">
+          <div class="chart-header">
+            <h3>Impact contribution</h3>
+            <span class="chart-subtitle">Share of CO2e offsets by category</span>
+          </div>
+          <div class="chart-wrapper doughnut">
+            <canvas id="categoryShareChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Layout Section -->
+      <section class="bottom-grid">
+        <!-- Recent Activities -->
+        <div class="glass-card table-container">
+          <div class="table-header">
+            <h3>Recent Logged Activities</h3>
+            <a href="form.html" class="table-link">View All <i class="fa-solid fa-chevron-right"></i></a>
+          </div>
+          <div class="table-wrapper">
+            <table class="activity-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Activity Type</th>
+                  <th>Value</th>
+                  <th>CO2 Offset</th>
+                  <th>Logged By</th>
+                </tr>
+              </thead>
+              <tbody id="activity-log-body">
+                <!-- Will be populated dynamically by JS -->
+                <tr>
+                  <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 0.5rem; display: block;"></i>
+                    Loading activity metrics...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SDG Indicators & Tips -->
+        <div class="glass-card sdg-status-container">
+          <div class="sdg-status-header">
+            <h3>SDG Alignment Review</h3>
+            <span class="badge-sdg">Active Focus</span>
+          </div>
+          
+          <div class="sdg-progress-list">
+            <!-- SDG 12 Progress -->
+            <div class="sdg-progress-item">
+              <div class="sdg-progress-header">
+                <div class="sdg-icon-small sdg12">12</div>
+                <div class="sdg-progress-meta">
+                  <h4>Responsible Consumption</h4>
+                  <span class="sdg-metric" id="sdg12-status">Recycled 120kg waste & conserved 950L water</span>
+                </div>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: 75%; background: #D3A03B;"></div>
+              </div>
+            </div>
+
+            <!-- SDG 13 Progress -->
+            <div class="sdg-progress-item">
+              <div class="sdg-progress-header">
+                <div class="sdg-icon-small sdg13">13</div>
+                <div class="sdg-progress-meta">
+                  <h4>Climate Action</h4>
+                  <span class="sdg-metric" id="sdg13-status">Avoided 542.2kg CO2e emissions</span>
+                </div>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: 54%; background: #3F7E44;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="green-tip-box">
+            <div class="tip-icon"><i class="fa-solid fa-lightbulb"></i></div>
+            <div class="tip-content">
+              <strong>Green Action Recommendation:</strong><br>
+              <span id="dynamic-tip">Commuting via bicycle (Distance Biked) offsets 210g CO2 per km. Swap just 2 car trips a week to boost Lumen's score!</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="../js/utils.js"></script>
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

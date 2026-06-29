@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ImpactLens — AI Sustainability Reporter</title>
+  <meta name="description" content="Automatically generate professional sustainability impact reports from raw activity data, aligned with SDG 12 & 13. Created by Team Lumen.">
+  
+  <!-- FontAwesome & Google Fonts (loaded in style.css, but loaded here too for reliability) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  
+  <style>
+    /* Landing page overrides & custom styling */
+    .landing-body {
+      background-color: var(--bg-primary);
+      background-image: 
+        radial-gradient(circle at 50% 15%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 10% 80%, rgba(6, 182, 212, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+    
+    .landing-header {
+      width: 100%;
+      max-width: 1200px;
+      padding: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+    
+    .landing-nav {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    
+    .landing-nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: var(--transition-fast);
+    }
+    
+    .landing-nav a:hover {
+      color: var(--text-primary);
+    }
+    
+    .hero {
+      max-width: 1000px;
+      padding: 6rem 2rem 4rem 2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      z-index: 5;
+    }
+    
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 50px;
+      font-size: 0.85rem;
+      color: var(--accent-primary);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+    }
+    
+    .hero-title {
+      font-family: var(--font-header);
+      font-size: clamp(2.5rem, 6vw, 4.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      background: linear-gradient(135deg, var(--text-primary) 30%, #e2e8f0 70%, var(--accent-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    
+    .hero-subtitle {
+      max-width: 650px;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+    
+    .cta-container {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .btn-large {
+      padding: 0.9rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: var(--border-radius-md);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      transition: var(--transition-fast);
+    }
+    
+    .btn-large.primary {
+      background: var(--accent-gradient);
+      color: var(--bg-primary);
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+    }
+    
+    .btn-large.primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+    }
+    
+    .btn-large.secondary {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+    
+    .btn-large.secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--border-hover);
+      transform: translateY(-3px);
+    }
+    
+    .features-grid {
+      width: 100%;
+      max-width: 1200px;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+      z-index: 5;
+    }
+    
+    .feature-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 2.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-lg);
+      transition: var(--transition-normal);
+      backdrop-filter: blur(12px);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(16, 185, 129, 0.3);
+      background: rgba(17, 24, 39, 0.9);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(16, 185, 129, 0.1);
+    }
+    
+    .feature-icon-wrapper {
+      width: 50px;
+      height: 50px;
+      border-radius: var(--border-radius-md);
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      color: var(--accent-primary);
+      margin-bottom: 0.5rem;
+      transition: var(--transition-fast);
+    }
+    
+    .feature-card:hover .feature-icon-wrapper {
+      background: var(--accent-gradient);
+      color: var(--bg-primary);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+    }
+    
+    .feature-card h3 {
+      font-family: var(--font-header);
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+    
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    
+    .sdg-section {
+      width: 100%;
+      background: rgba(17, 24, 39, 0.4);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      padding: 4rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      z-index: 5;
+    }
+    
+    .sdg-header {
+      text-align: center;
+    }
+    
+    .sdg-header h2 {
+      font-family: var(--font-header);
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .sdg-header p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+    
+    .sdg-cards {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 1000px;
+      margin-top: 1rem;
+    }
+    
+    .sdg-card {
+      width: 280px;
+      padding: 2rem;
+      border-radius: var(--border-radius-lg);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1rem;
+      transition: var(--transition-fast);
+      background: rgba(255, 255, 255, 0.01);
+    }
+    
+    .sdg-card:hover {
+      border-color: var(--border-hover);
+      transform: scale(1.02);
+    }
+    
+    .sdg-number {
+      font-family: var(--font-header);
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    
+    .sdg-number.sdg12 {
+      color: #D3A03B; /* SDG 12 Color Goldish */
+    }
+    
+    .sdg-number.sdg13 {
+      color: #3F7E44; /* SDG 13 Color Dark Green */
+    }
+    
+    .sdg-card h4 {
+      font-family: var(--font-header);
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+    
+    .sdg-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    
+    .landing-footer {
+      width: 100%;
+      max-width: 1200px;
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      margin-top: 2rem;
+      z-index: 5;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+    
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    
+    .footer-links a:hover {
+      color: var(--accent-primary);
+    }
+  </style>
+</head>
+<body class="landing-body">
+  
+  <header class="landing-header fade-in">
+    <div class="brand">
+      <div class="brand-icon">
+        <i class="fa-solid fa-leaf"></i>
+      </div>
+      <div class="brand-name">Impact<span>Lens</span></div>
+    </div>
+    <nav class="landing-nav">
+      <a href="#features">Features</a>
+      <a href="#sdgs">SDGs</a>
+      <a href="pages/dashboard.html" class="btn-primary" id="btn-enter-header">
+        <i class="fa-solid fa-gauge"></i> Enter App
+      </a>
+    </nav>
+  </header>
+
+  <main class="hero fade-in">
+    <div class="hero-badge">
+      <i class="fa-solid fa-star"></i> Developed by Team 5 (Lumen)
+    </div>
+    <h1 class="hero-title" id="main-heading">AI-Powered Sustainability Impact Reporter</h1>
+    <p class="hero-subtitle">
+      Automatically generate professional, audited carbon offset and climate impact reports from your everyday actions. Make your green progress visual, measurable, and shareable.
+    </p>
+    
+    <div class="cta-container">
+      <a href="pages/dashboard.html" class="btn-large primary" id="btn-enter-hero">
+        Enter Dashboard <i class="fa-solid fa-arrow-right"></i>
+      </a>
+      <a href="#features" class="btn-large secondary" id="btn-learn-more">
+        Learn More
+      </a>
+    </div>
+  </main>
+
+  <section class="features-grid fade-in" id="features" style="animation-delay: 0.1s;">
+    <div class="feature-card">
+      <div class="feature-icon-wrapper">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <h3>Real-time Metrics Tracking</h3>
+      <p>Log waste recycling, distance cycled, energy conserved, and water saved. Monitor raw quantities and automatically compute CO2 equivalents using environmental models.</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon-wrapper">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+      </div>
+      <h3>AI Summary Generator</h3>
+      <p>Instantly turn numerical savings data into context-rich, professionally styled narrative summaries. Perfect for pitch decks, stakeholder reporting, and social sharing.</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon-wrapper">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+      <h3>Gamified Leaderboards</h3>
+      <p>Foster friendly team competition with integrated points and impact ranking. Track Team Lumen's climbing scores against other sustainability groups.</p>
+    </div>
+  </section>
+
+  <section class="sdg-section fade-in" id="sdgs" style="animation-delay: 0.2s;">
+    <div class="sdg-header">
+      <h2>Aligned with United Nations SDGs</h2>
+      <p>Driving positive global change through local and organizational activity tracking.</p>
+    </div>
+    
+    <div class="sdg-cards">
+      <div class="sdg-card">
+        <div class="sdg-number sdg12">12</div>
+        <h4>Responsible Consumption</h4>
+        <p>Promote resource and energy efficiency, sustainable infrastructure, and access to basic services, green jobs and a better quality of life.</p>
+      </div>
+      
+      <div class="sdg-card">
+        <div class="sdg-number sdg13">13</div>
+        <h4>Climate Action</h4>
+        <p>Take urgent action to combat climate change and its impacts by reducing personal, team, and corporate carbon emissions.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="landing-footer fade-in" style="animation-delay: 0.3s;">
+    <div class="footer-links">
+      <a href="pages/dashboard.html">Dashboard</a>
+      <a href="pages/form.html">Log Activity</a>
+      <a href="pages/report.html">Generate Report</a>
+      <a href="pages/leaderboard.html">Leaderboards</a>
+    </div>
+    <div>
+      &copy; 2026 Team Lumen (Team 5). Built with passion for SDG 12 & 13.
+    </div>
+  </footer>
+
+</body>
+</html>

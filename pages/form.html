@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log Activity — ImpactLens</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/form.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-leaf"></i>
+        </div>
+        <div class="brand-name">Impact<span>Lens</span></div>
+      </div>
+      
+      <nav style="flex-grow: 1;">
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="dashboard.html" id="nav-dashboard">
+              <i class="fa-solid fa-chart-pie"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item active">
+            <a href="form.html" id="nav-form">
+              <i class="fa-solid fa-circle-plus"></i>
+              <span>Log Activity</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="report.html" id="nav-report">
+              <i class="fa-solid fa-file-invoice"></i>
+              <span>Impact Report</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="leaderboard.html" id="nav-leaderboard">
+              <i class="fa-solid fa-ranking-star"></i>
+              <span>Leaderboard</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <a href="../index.html" style="text-decoration: none; color: inherit; display: block; margin-bottom: 0.75rem; font-size: 0.85rem; padding-left: 0.75rem; color: var(--text-secondary); transition: var(--transition-fast);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">
+          <i class="fa-solid fa-arrow-left-long"></i> Back to Landing
+        </a>
+        <div class="team-card">
+          <div class="team-avatar">L5</div>
+          <div class="team-info">
+            <span class="team-name">Team Lumen</span>
+            <span class="team-role">Sustainability Crew</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content fade-in">
+      
+      <!-- Top Bar -->
+      <section class="top-bar">
+        <div class="page-title-container">
+          <h1 class="page-title">Log Green Activity</h1>
+          <p class="page-subtitle">Add your sustainable action logs to compute carbon offset values instantly.</p>
+        </div>
+      </section>
+
+      <!-- Form Card Container -->
+      <section class="form-container-card">
+        <div class="glass-card form-card">
+          <form id="activity-form">
+            <div class="form-grid">
+              
+              <!-- Date Input -->
+              <div class="form-group">
+                <label for="act-date"><i class="fa-regular fa-calendar-days"></i> Activity Date</label>
+                <input type="date" id="act-date" required>
+              </div>
+
+              <!-- Activity Member -->
+              <div class="form-group">
+                <label for="act-user"><i class="fa-solid fa-user"></i> Logged By</label>
+                <select id="act-user" required>
+                  <option value="Kusuma">Kusuma</option>
+                  <option value="Lumen Leader">Lumen Leader</option>
+                  <option value="Elena Vance">Elena Vance</option>
+                  <option value="Marcus Fenix">Marcus Fenix</option>
+                  <option value="Sarah Connor">Sarah Connor</option>
+                </select>
+              </div>
+
+              <!-- Category Selection -->
+              <div class="form-group">
+                <label for="act-category"><i class="fa-solid fa-tags"></i> Category</label>
+                <select id="act-category" required>
+                  <option value="" disabled selected>Select category...</option>
+                  <option value="Waste Recycled">Waste Diverted (SDG 12)</option>
+                  <option value="Trees Planted">Forestry & Offsets (SDG 13)</option>
+                  <option value="Distance Biked">Eco-Commuting (SDG 13)</option>
+                  <option value="Electricity Saved">Energy Conserved (SDG 12)</option>
+                  <option value="Water Saved">Water Conserved (SDG 12)</option>
+                </select>
+              </div>
+
+              <!-- Quantity Input -->
+              <div class="form-group">
+                <label for="act-qty"><i class="fa-solid fa-calculator"></i> Quantity</label>
+                <div class="input-with-unit">
+                  <input type="number" id="act-qty" min="0.1" step="any" placeholder="Enter amount" required disabled>
+                  <span id="unit-indicator" class="unit-badge">--</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Real-Time Carbon Offset Calculator Display -->
+            <div class="preview-box">
+              <div class="preview-icon">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+              </div>
+              <div class="preview-text">
+                <span class="preview-label">Calculated Impact Preview</span>
+                <div class="preview-stats">
+                  <span id="preview-co2">0.00</span> <span class="preview-unit">kg CO2e offset</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" id="btn-cancel" onclick="location.href='dashboard.html'">
+                Cancel
+              </button>
+              <button type="submit" class="btn-primary" id="btn-submit" disabled>
+                <i class="fa-solid fa-check"></i> Submit Activity
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- SDG Context helper panel -->
+        <div class="glass-card context-panel">
+          <h3>Environmental Conversions</h3>
+          <p class="context-desc">Metrics are automatically calculated using accredited climate baseline conversion rates.</p>
+          
+          <ul class="rates-list">
+            <li>
+              <span class="rate-icon"><i class="fa-solid fa-recycle" style="color: #10B981;"></i></span>
+              <div class="rate-details">
+                <strong>Waste Recycled</strong>
+                <span>0.75 kg CO2e saved per kg</span>
+              </div>
+            </li>
+            <li>
+              <span class="rate-icon"><i class="fa-solid fa-tree" style="color: #059669;"></i></span>
+              <div class="rate-details">
+                <strong>Trees Planted</strong>
+                <span>22.00 kg CO2e offset per tree</span>
+              </div>
+            </li>
+            <li>
+              <span class="rate-icon"><i class="fa-solid fa-bicycle" style="color: #3B82F6;"></i></span>
+              <div class="rate-details">
+                <strong>Distance Biked</strong>
+                <span>0.21 kg CO2e saved per km</span>
+              </div>
+            </li>
+            <li>
+              <span class="rate-icon"><i class="fa-solid fa-bolt" style="color: #F59E0B;"></i></span>
+              <div class="rate-details">
+                <strong>Electricity Saved</strong>
+                <span>0.45 kg CO2e saved per kWh</span>
+              </div>
+            </li>
+            <li>
+              <span class="rate-icon"><i class="fa-solid fa-droplet" style="color: #06B6D4;"></i></span>
+              <div class="rate-details">
+                <strong>Water Saved</strong>
+                <span>0.002 kg CO2e saved per Liter</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="../js/form.js"></script>
+</body>
+</html>

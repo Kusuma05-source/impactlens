@@ -1,0 +1,357 @@
+/**
+ * Dashboard Logic for ImpactLens.
+ * Interfaces with utils.js variables and methods.
+ */
+
+// List of actionable green tips
+const GREEN_TIPS = [
+  "Commuting via bicycle (Distance Biked) offsets 210g CO2 per km. Swap just 2 car trips a week to boost Lumen's score!",
+  "Recycling paper and cardboard saves 0.75kg CO2 per kg. Make sure to compress packages to save landfill space!",
+  "Turning off unused computers and monitors can save up to 150 kWh/year—about 67 kg of carbon emissions!",
+  "Reducing shower time by 2 minutes saves 15L of water and the energy needed to heat it, lowering your overall footprint.",
+  "Planting native trees helps capture carbon, provides habitat for local wildlife, and improves soil moisture absorption.",
+  "Using energy-saving LED bulbs instead of incandescent ones reduces energy usage by up to 80% and lasts 25x longer!"
+];
+
+let trendChartInstance = null;
+let shareChartInstance = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+  setSystemDate();
+  loadDashboardData();
+  setupDynamicTips();
+});
+
+// Update the system date dynamically
+function setSystemDate() {
+  const dateElement = document.getElementById("current-date");
+  if (dateElement) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const today = new Date();
+    dateElement.textContent = today.toLocaleDateString('en-US', options);
+  }
+}
+
+// Select a random green tip and rotate it
+function setupDynamicTips() {
+  const tipElement = document.getElementById("dynamic-tip");
+  if (tipElement) {
+    const setTip = () => {
+      const randomIndex = Math.floor(Math.random() * GREEN_TIPS.length);
+      tipElement.textContent = GREEN_TIPS[randomIndex];
+    };
+    
+    // Set initial tip
+    setTip();
+    
+    // Rotate tip every 12 seconds
+    setInterval(setTip, 12000);
+  }
+}
+
+// Main logic to fetch data and render dashboard components
+async function loadDashboardData() {
+  // Read baseline from global FALLBACK_DATA defined in utils.js
+  let data = { ...FALLBACK_DATA };
+  
+  try {
+    const response = await fetch("../data/sample-data.json");
+    if (response.ok) {
+      data = await response.json();
+      console.log("Successfully fetched metrics database.");
+    } else {
+      console.warn("Could not fetch sample-data.json, using compiled dataset fallback.");
+    }
+  } catch (error) {
+    console.warn("Fetch failed (most likely CORS/file protocol), using compiled dataset fallback.", error);
+  }
+
+  // Safe checks for data structure
+  data.activities = data.activities || [];
+  data.conversionRates = data.conversionRates || {};
+
+  // Integrate local storage activities
+  try {
+    const storedLocal = localStorage.getItem("impactlens_activities");
+    if (storedLocal) {
+      const localActivities = JSON.parse(storedLocal);
+      if (Array.isArray(localActivities)) {
+        data.activities = [...data.activities, ...localActivities];
+        console.log(`Merged ${localActivities.length} local actions from localStorage.`);
+      }
+    }
+  } catch (err) {
+    console.warn("Failed to load local activities from localStorage:", err);
+  }
+
+  // 1. Process calculations using global function in utils.js
+  const summary = calculateSustainabilityMetrics(data);
+  
+  // 2. Render KPI cards
+  renderKPICards(summary);
+  
+  // 3. Render recent activities table
+  renderActivityTable(data.activities, data.conversionRates);
+  
+  // 4. Render charts
+  renderCharts(summary, data.activities, data.conversionRates);
+
+  // 5. Update SDG Section values
+  document.getElementById("sdg12-status").textContent = `Recycled ${(summary.totals["Waste Recycled"] || 0).toFixed(0)}kg waste & conserved ${(summary.totals["Water Saved"] || 0).toFixed(0)}L water`;
+  document.getElementById("sdg13-status").textContent = `Avoided ${(summary.totalCO2 || 0).toFixed(1)}kg CO2e emissions`;
+}
+
+// Render the metric highlights and update goal meters
+function renderKPICards(summary) {
+  // Update numbers safely
+  document.getElementById("val-co2").textContent = (summary.totalCO2 || 0).toFixed(1);
+  document.getElementById("val-waste").textContent = (summary.totals["Waste Recycled"] || 0).toFixed(0);
+  document.getElementById("val-energy").textContent = (summary.totals["Electricity Saved"] || 0).toFixed(0);
+  document.getElementById("val-biked").textContent = (summary.totals["Distance Biked"] || 0).toFixed(0);
+
+  // Calculate and update progress bars using global GOALS defined in utils.js
+  const pctCO2 = Math.min(100, Math.round(((summary.totalCO2 || 0) / GOALS.co2) * 100));
+  const pctWaste = Math.min(100, Math.round(((summary.totals["Waste Recycled"] || 0) / GOALS.waste) * 100));
+  const pctEnergy = Math.min(100, Math.round(((summary.totals["Electricity Saved"] || 0) / GOALS.energy) * 100));
+  const pctBiked = Math.min(100, Math.round(((summary.totals["Distance Biked"] || 0) / GOALS.biked) * 100));
+
+  updateProgressBar("kpi-co2", pctCO2);
+  updateProgressBar("kpi-waste", pctWaste);
+  updateProgressBar("kpi-energy", pctEnergy);
+  updateProgressBar("kpi-biked", pctBiked);
+}
+
+function updateProgressBar(cardId, percentage) {
+  const card = document.getElementById(cardId);
+  if (card) {
+    const fill = card.querySelector(".progress-bar-fill");
+    const label = card.querySelector(".progress-label");
+    if (fill) fill.style.width = `${percentage}%`;
+    if (label) label.textContent = `Goal Progress: ${percentage}%`;
+  }
+}
+
+// Render dynamic activity list
+function renderActivityTable(activities, conversionRates) {
+  const tableBody = document.getElementById("activity-log-body");
+  if (!tableBody) return;
+  
+  tableBody.innerHTML = "";
+  
+  if (activities.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No activities logged yet. Get started by clicking "Log Activity"!</td></tr>`;
+    return;
+  }
+  
+  // Sort activities by date descending
+  const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  sorted.forEach(act => {
+    if (!act) return;
+    const rateInfo = conversionRates[act.activity];
+    const categoryClass = rateInfo ? (rateInfo.category || "waste").toLowerCase() : "waste";
+    const qty = parseFloat(act.quantity) || 0;
+    const rate = rateInfo ? (parseFloat(rateInfo.rate) || 0) : 0;
+    const co2Val = (qty * rate).toFixed(2);
+    
+    // Format date beautifully (e.g. 2 Jan)
+    const dateObj = new Date(act.date);
+    const day = dateObj.getDate();
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const formattedDate = `${day} ${monthNames[dateObj.getMonth()]}`;
+
+    // Category icon mapper
+    let iconHTML = '<i class="fa-solid fa-leaf"></i>';
+    if (act.activity === "Waste Recycled") iconHTML = '<i class="fa-solid fa-recycle"></i>';
+    if (act.activity === "Trees Planted") iconHTML = '<i class="fa-solid fa-tree"></i>';
+    if (act.activity === "Distance Biked") iconHTML = '<i class="fa-solid fa-bicycle"></i>';
+    if (act.activity === "Electricity Saved") iconHTML = '<i class="fa-solid fa-bolt"></i>';
+    if (act.activity === "Water Saved") iconHTML = '<i class="fa-solid fa-droplet"></i>';
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${formattedDate}</td>
+      <td>
+        <span class="badge-category ${categoryClass}">
+          ${iconHTML} ${act.activity}
+        </span>
+      </td>
+      <td style="font-weight: 500;">${qty} <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">${act.unit || ''}</span></td>
+      <td style="font-weight: 600; color: var(--accent-primary);">${co2Val} kg</td>
+      <td style="color: var(--text-secondary); font-size: 0.85rem;">${act.loggedBy || 'Unknown'}</td>
+    `;
+    tableBody.appendChild(tr);
+  });
+}
+
+// Generate the beautiful Chart.js visualizations
+function renderCharts(summary, activities, conversionRates) {
+  // Global Chart config defaults for dark-mode premium look
+  Chart.defaults.color = '#9ca3af';
+  Chart.defaults.font.family = "'Inter', sans-serif";
+  Chart.defaults.font.size = 11;
+  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(17, 24, 39, 0.95)';
+  Chart.defaults.plugins.tooltip.titleFont = { family: "'Outfit', sans-serif", size: 13, weight: 'bold' };
+  Chart.defaults.plugins.tooltip.bodyFont = { family: "'Inter', sans-serif", size: 12 };
+  Chart.defaults.plugins.tooltip.borderColor = 'rgba(255, 255, 255, 0.08)';
+  Chart.defaults.plugins.tooltip.borderWidth = 1;
+  Chart.defaults.plugins.tooltip.padding = 10;
+  Chart.defaults.plugins.tooltip.cornerRadius = 8;
+  
+  // -------------------------------------------------------------
+  // Chart 1: Line Chart - Carbon Offset Accumulation Over Time
+  // -------------------------------------------------------------
+  const ctxTrend = document.getElementById("co2TrendChart");
+  if (ctxTrend) {
+    if (trendChartInstance) {
+      trendChartInstance.destroy();
+    }
+    
+    // Sort activities by date ascending to build chronological line
+    const chronoActivities = [...activities].sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    // Group and aggregate offsets by date to prevent duplicate labels on X-axis
+    const dailyOffsets = {};
+    chronoActivities.forEach(act => {
+      if (!act) return;
+      const rateInfo = conversionRates[act.activity];
+      const co2 = rateInfo ? (parseFloat(act.quantity) || 0) * (parseFloat(rateInfo.rate) || 0) : 0;
+      
+      const dateObj = new Date(act.date);
+      const day = dateObj.getDate();
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const formattedDate = `${day} ${monthNames[dateObj.getMonth()]}`;
+      
+      if (dailyOffsets[formattedDate] === undefined) {
+        dailyOffsets[formattedDate] = 0;
+      }
+      dailyOffsets[formattedDate] += co2;
+    });
+    
+    const labels = Object.keys(dailyOffsets);
+    const cumulativeData = [];
+    let sum = 0;
+    
+    labels.forEach(date => {
+      sum += dailyOffsets[date];
+      cumulativeData.push(sum.toFixed(1));
+    });
+
+    // Create gradient fill
+    const canvas = ctxTrend;
+    const ctx = canvas.getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 250);
+    gradient.addColorStop(0, 'rgba(16, 185, 129, 0.22)');
+    gradient.addColorStop(1, 'rgba(16, 185, 129, 0.00)');
+
+    trendChartInstance = new Chart(ctxTrend, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Cumulative CO2e Offset (kg)',
+          data: cumulativeData,
+          borderColor: '#10B981',
+          borderWidth: 3,
+          backgroundColor: gradient,
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: '#10B981',
+          pointBorderColor: 'rgba(9, 13, 22, 1)',
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointHoverBackgroundColor: '#06B6D4',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              padding: 10
+            }
+          },
+          y: {
+            grid: {
+              color: 'rgba(255, 255, 255, 0.04)',
+              drawBorder: false
+            },
+            ticks: {
+              padding: 10,
+              callback: function(value) {
+                return value + ' kg';
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // -------------------------------------------------------------
+  // Chart 2: Doughnut Chart - Category Impact Breakdown
+  // -------------------------------------------------------------
+  const ctxShare = document.getElementById("categoryShareChart");
+  if (ctxShare) {
+    if (shareChartInstance) {
+      shareChartInstance.destroy();
+    }
+
+    const categories = Object.keys(summary.categoryOffsets).filter(cat => summary.categoryOffsets[cat] > 0);
+    const offsets = categories.map(cat => summary.categoryOffsets[cat].toFixed(1));
+    
+    // Map categories to colors
+    const colorMap = {
+      "Waste": "#10B981",
+      "Forestry": "#059669",
+      "Transport": "#3B82F6",
+      "Energy": "#F59E0B",
+      "Water": "#06B6D4"
+    };
+    const bgColors = categories.map(cat => colorMap[cat] || '#6b7280');
+
+    shareChartInstance = new Chart(ctxShare, {
+      type: 'doughnut',
+      data: {
+        labels: categories,
+        datasets: [{
+          data: offsets,
+          backgroundColor: bgColors,
+          borderColor: 'rgba(17, 24, 39, 1)',
+          borderWidth: 3,
+          hoverOffset: 12
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: {
+              boxWidth: 12,
+              padding: 15,
+              font: {
+                size: 11
+              }
+            }
+          }
+        },
+        cutout: '72%'
+      }
+    });
+  }
+}
