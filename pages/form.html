@@ -210,6 +210,11 @@
         <div class="form-container-card">
           <div class="glass-card form-card bulk-upload-card">
 
+            <!-- Daily Upload Info -->
+            <div class="daily-upload-info" style="margin-bottom: 1rem; color: var(--text-secondary); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; justify-content: center; background: rgba(255,255,255,0.02); padding: 0.5rem 1rem; border-radius: 50px;">
+              <i class="fa-solid fa-calendar-day" style="color: var(--accent-primary);"></i> Uploading daily batch for: <strong id="bulk-upload-date" style="color: var(--text-primary);">Today</strong>
+            </div>
+
             <!-- Upload Zone -->
             <div class="upload-zone" id="upload-zone">
               <input type="file" id="csv-file-input" accept=".csv" hidden>
@@ -218,7 +223,7 @@
               </div>
               <h3 class="upload-zone-title">Drag & Drop your CSV file here</h3>
               <p class="upload-zone-subtitle">or <span class="upload-browse-link">browse</span> to choose a file</p>
-              <p class="upload-zone-hint">Accepted format: .csv — Max columns: Date, Activity, Quantity, Logged By</p>
+              <p class="upload-zone-hint">Accepted format: .csv — Required columns: Activity, Quantity, Logged By</p>
             </div>
 
             <!-- Download Template -->
@@ -254,14 +259,14 @@
                 <span class="rate-icon"><i class="fa-solid fa-table-columns" style="color: #10B981;"></i></span>
                 <div class="rate-details">
                   <strong>Required Columns</strong>
-                  <span>Date, Activity, Quantity, Logged By</span>
+                  <span>Activity, Quantity, Logged By</span>
                 </div>
               </li>
               <li>
                 <span class="rate-icon"><i class="fa-solid fa-calendar-check" style="color: #3B82F6;"></i></span>
                 <div class="rate-details">
-                  <strong>Date Format</strong>
-                  <span>YYYY-MM-DD (e.g. 2026-07-01)</span>
+                  <strong>Date Tracking</strong>
+                  <span>Auto-stamped with today's date</span>
                 </div>
               </li>
               <li>

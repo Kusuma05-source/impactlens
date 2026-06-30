@@ -126,6 +126,34 @@ async function loadReportData() {
     console.warn("localStorage loading failed in reporter module.", err);
   }
 
+  // Filter by selected period
+  const periodSelect = document.getElementById("report-period");
+  if (periodSelect && data.activities) {
+    const period = periodSelect.value;
+    const now = new Date();
+    now.setHours(23, 59, 59, 999);
+    
+    let startDate = new Date(0); // All time
+    let endDate = new Date(now);
+    
+    if (period === "this-week") {
+      startDate = new Date(now);
+      startDate.setDate(startDate.getDate() - 7);
+      startDate.setHours(0,0,0,0);
+    } else if (period === "this-month") {
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    } else if (period === "last-month") {
+      startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      endDate = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+    }
+    
+    data.activities = data.activities.filter(act => {
+      if (!act || !act.date) return false;
+      const actDate = new Date(act.date);
+      return actDate >= startDate && actDate <= endDate;
+    });
+  }
+
   // Save to global variables for templates and theme updates
   reportActivities = data.activities;
   reportConversionRates = data.conversionRates;

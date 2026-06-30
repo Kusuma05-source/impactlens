@@ -91,6 +91,9 @@ function setupFormListeners() {
     // Save to local storage
     saveActivityLocal(newActivity);
     
+    // Update streak based on activity date
+    updateStreak(date);
+    
     // Redirect back to dashboard
     location.href = "dashboard.html";
   });
@@ -118,6 +121,77 @@ function validateForm(category, qtyString, btn) {
     btn.disabled = false;
   } else {
     btn.disabled = true;
+  }
+}
+
+// ============================================
+// STREAK UPDATE LOGIC
+// ============================================
+
+function updateStreak(activityDateStr) {
+  // Read existing streak data
+  let streakData = { currentStreak: 0, longestStreak: 0, lastLogDate: null };
+  try {
+    const stored = localStorage.getItem("impactlens_streak");
+    if (stored) {
+      streakData = JSON.parse(stored);
+    }
+  } catch (e) {
+    console.warn("Could not read streak data:", e);
+  }
+
+  // Normalize today's date to YYYY-MM-DD
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+  // Use the activity date for streak calculation
+  const actDate = new Date(activityDateStr);
+  actDate.setHours(0, 0, 0, 0);
+  const actDateStr = `${actDate.getFullYear()}-${String(actDate.getMonth() + 1).padStart(2, '0')}-${String(actDate.getDate()).padStart(2, '0')}`;
+
+  const lastLogDate = streakData.lastLogDate;
+
+  if (!lastLogDate) {
+    // First ever log
+    streakData.currentStreak = 1;
+    streakData.lastLogDate = actDateStr;
+  } else if (actDateStr === lastLogDate) {
+    // Same day — streak stays the same, ensure at least 1
+    if (streakData.currentStreak === 0) {
+      streakData.currentStreak = 1;
+    }
+  } else {
+    // Calculate day difference
+    const lastDate = new Date(lastLogDate);
+    lastDate.setHours(0, 0, 0, 0);
+    const diffMs = actDate.getTime() - lastDate.getTime();
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 1) {
+      // Consecutive day — streak continues
+      streakData.currentStreak += 1;
+      streakData.lastLogDate = actDateStr;
+    } else if (diffDays > 1) {
+      // Gap — streak resets
+      streakData.currentStreak = 1;
+      streakData.lastLogDate = actDateStr;
+    } else if (diffDays < 0) {
+      // Logging a past date — don't break streak, but don't extend it either
+      // Only update lastLogDate if it's more recent
+    }
+  }
+
+  // Update longest streak
+  if (streakData.currentStreak > streakData.longestStreak) {
+    streakData.longestStreak = streakData.currentStreak;
+  }
+
+  // Save back to localStorage
+  try {
+    localStorage.setItem("impactlens_streak", JSON.stringify(streakData));
+    console.log("Streak updated:", streakData);
+  } catch (e) {
+    console.error("Error saving streak data:", e);
   }
 }
 
@@ -167,10 +241,17 @@ function saveActivityLocal(activity) {
     "Sustainable Meals":  "meals"
   };
 
-  const EXPECTED_HEADERS = ["date", "activity", "quantity", "logged by"];
+  const EXPECTED_HEADERS = ["activity", "quantity", "logged by"];
 
   // State for parsed data
   let parsedRows = [];
+  
+  // Set upload date UI
+  const uploadDateEl = document.getElementById("bulk-upload-date");
+  if (uploadDateEl) {
+    const options = { month: 'long', day: 'numeric', year: 'numeric' };
+    uploadDateEl.textContent = new Date().toLocaleDateString('en-US', options);
+  }
 
   // ---- Tab Switching ----
   document.querySelectorAll(".form-tab").forEach(tab => {
@@ -242,12 +323,12 @@ function saveActivityLocal(activity) {
     templateBtn.addEventListener("click", (e) => {
       e.stopPropagation(); // Don't trigger upload zone click
       const templateCSV = [
-        "Date,Activity,Quantity,Logged By",
-        "2026-07-01,Distance Biked,15,Kusuma",
-        "2026-07-01,Waste Recycled,3.5,Elena Vance",
-        "2026-07-02,Electricity Saved,12,Marcus Fenix",
-        "2026-07-02,Water Saved,200,Sarah Connor",
-        "2026-07-03,Sustainable Meals,4,Lumen Leader"
+        "Activity,Quantity,Logged By",
+        "Distance Biked,15,Kusuma",
+        "Waste Recycled,3.5,Elena Vance",
+        "Electricity Saved,12,Marcus Fenix",
+        "Water Saved,200,Sarah Connor",
+        "Sustainable Meals,4,Lumen Leader"
       ].join("\n");
 
       const blob = new Blob([templateCSV], { type: "text/csv;charset=utf-8;" });
@@ -295,6 +376,13 @@ function saveActivityLocal(activity) {
         console.error("Error writing to localStorage:", err);
         return;
       }
+
+      // Update streak for each imported row (use the latest date for streak)
+      // Sort by date and update streak for the most recent date
+      const sortedDates = parsedRows.map(r => r.date).sort();
+      sortedDates.forEach(dateStr => {
+        updateStreak(dateStr);
+      });
 
       // Show success toast
       showToast(`Successfully imported ${parsedRows.length} activities!`);
@@ -401,7 +489,7 @@ function saveActivityLocal(activity) {
     if (!headersMatch || headers.length < EXPECTED_HEADERS.length) {
       errors.push({
         row: 1,
-        message: `Invalid header row. Expected: "Date, Activity, Quantity, Logged By" — Got: "${parseCSVLine(lines[0]).join(", ")}"`
+        message: `Invalid header row. Expected: "Activity, Quantity, Logged By" — Got: "${parseCSVLine(lines[0]).join(", ")}"`
       });
       return { rows, errors };
     }
@@ -417,28 +505,12 @@ function saveActivityLocal(activity) {
       const rowNum = i + 1; // 1-indexed, header is row 1
       const fields = parseCSVLine(lines[i]);
 
-      if (fields.length < 4) {
-        errors.push({ row: rowNum, message: `Expected 4 columns, found ${fields.length}.` });
+      if (fields.length < 3) {
+        errors.push({ row: rowNum, message: `Expected 3 columns, found ${fields.length}.` });
         continue;
       }
 
-      const [dateStr, activityStr, quantityStr, userStr] = fields;
-
-      // Validate date (YYYY-MM-DD)
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-        errors.push({ row: rowNum, message: `Invalid date format "${dateStr}". Expected YYYY-MM-DD.` });
-      } else {
-        // Also check it's a real date
-        const dateParts = dateStr.split("-");
-        const testDate = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
-        if (
-          testDate.getFullYear() !== parseInt(dateParts[0]) ||
-          testDate.getMonth() !== parseInt(dateParts[1]) - 1 ||
-          testDate.getDate() !== parseInt(dateParts[2])
-        ) {
-          errors.push({ row: rowNum, message: `"${dateStr}" is not a valid calendar date.` });
-        }
-      }
+      const [activityStr, quantityStr, userStr] = fields;
 
       // Validate activity
       const normalizedActivity = VALID_ACTIVITIES[activityStr.toLowerCase().trim()];
@@ -463,8 +535,11 @@ function saveActivityLocal(activity) {
       // If no errors for this row, add to valid rows
       const rowErrors = errors.filter(e => e.row === rowNum);
       if (rowErrors.length === 0 && normalizedActivity) {
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        
         rows.push({
-          date: dateStr,
+          date: todayStr,
           activity: normalizedActivity,
           quantity: quantity,
           user: userStr.trim()

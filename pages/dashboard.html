@@ -90,6 +90,64 @@
         </div>
       </section>
 
+      <!-- Streak & Activity Calendar Row -->
+      <section class="engagement-grid">
+        <!-- Streak Widget -->
+        <div class="glass-card streak-card" id="streak-widget">
+          <div class="streak-header">
+            <div class="streak-flame-wrapper" id="streak-flame">
+              <span class="streak-fire">🔥</span>
+            </div>
+            <div class="streak-info">
+              <div class="streak-count">
+                <span class="streak-number" id="streak-current">0</span>
+                <span class="streak-label">day streak</span>
+              </div>
+              <p class="streak-message" id="streak-message">Log an activity to start your streak!</p>
+            </div>
+          </div>
+          <div class="streak-footer">
+            <div class="streak-best">
+              <i class="fa-solid fa-trophy"></i>
+              <span>Best: <strong id="streak-longest">0</strong> days</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Last 7 Days Activity Calendar -->
+        <div class="glass-card calendar-card" id="activity-calendar">
+          <div class="calendar-header">
+            <h3><i class="fa-solid fa-calendar-week"></i> Last 7 Days</h3>
+          </div>
+          <div class="calendar-dots" id="calendar-dots">
+            <!-- Populated by JS -->
+          </div>
+          <div class="calendar-legend">
+            <span class="legend-item"><span class="legend-dot inactive"></span> No activity</span>
+            <span class="legend-item"><span class="legend-dot active"></span> Active</span>
+          </div>
+        </div>
+
+        <!-- Today's Impact Card -->
+        <div class="glass-card today-impact-card" id="today-impact">
+          <div class="today-header">
+            <i class="fa-solid fa-bolt"></i>
+            <h3>Today's Impact</h3>
+          </div>
+          <div class="today-stats">
+            <div class="today-stat">
+              <span class="today-stat-value" id="today-activities">0</span>
+              <span class="today-stat-label">Activities</span>
+            </div>
+            <div class="today-stat-divider"></div>
+            <div class="today-stat">
+              <span class="today-stat-value accent" id="today-co2">0.0</span>
+              <span class="today-stat-label">kg CO₂ saved</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- KPI Summary Cards Row -->
       <section class="kpi-grid">
         <!-- Card 1: Carbon Offset -->
@@ -198,6 +256,19 @@
           </div>
           <div class="chart-wrapper doughnut">
             <canvas id="categoryShareChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Daily Progress Chart -->
+      <section class="daily-progress-section">
+        <div class="glass-card chart-container">
+          <div class="chart-header">
+            <h3><i class="fa-solid fa-chart-bar" style="color: var(--accent-secondary); margin-right: 0.5rem;"></i>Daily Progress</h3>
+            <span class="chart-subtitle">CO₂ offset per day over the last 7 days</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="dailyProgressChart"></canvas>
           </div>
         </div>
       </section>

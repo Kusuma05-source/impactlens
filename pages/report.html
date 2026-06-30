@@ -87,8 +87,10 @@
           <div class="control-group">
             <label for="report-period">Time Period</label>
             <select id="report-period">
-              <option value="all">All Time Logs</option>
-              <option value="jan">January 2026</option>
+              <option value="all">All Time</option>
+              <option value="this-week">This Week (Last 7 Days)</option>
+              <option value="this-month">This Month</option>
+              <option value="last-month">Last Month</option>
             </select>
           </div>
           <div class="control-group">
@@ -199,6 +201,25 @@
                   <canvas id="docShareChart"></canvas>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <!-- Daily Breakdown Summary -->
+          <div class="doc-section" id="daily-breakdown-section">
+            <h3 class="section-heading">Daily Breakdown</h3>
+            <div class="daily-breakdown-wrapper">
+              <table class="doc-table" id="daily-breakdown-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Activities</th>
+                    <th>CO₂ Offset</th>
+                  </tr>
+                </thead>
+                <tbody id="daily-breakdown-body">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
             </div>
           </div>
 

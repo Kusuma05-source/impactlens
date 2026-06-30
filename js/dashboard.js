@@ -80,8 +80,19 @@ async function loadDashboardData() {
   // 4. Render charts
   renderCharts(summary, data.activities, data.conversionRates);
 
+  // 5. Render streak widget
+  renderStreakWidget(data.activities);
 
+  // 6. Render activity calendar (last 7 days)
+  renderActivityCalendar(data.activities);
+
+  // 7. Render today's impact summary
+  renderTodayImpact(data.activities, data.conversionRates);
+
+  // 8. Render daily progress bar chart (last 7 days)
+  renderDailyProgressChart(data.activities, data.conversionRates);
 }
+
 
 // Render the metric highlights and update goal meters
 function renderKPICards(summary) {
@@ -336,4 +347,265 @@ function renderCharts(summary, activities, conversionRates) {
       }
     });
   }
+}
+
+// ============================================
+// STREAK WIDGET
+// ============================================
+
+function getDateString(date) {
+  const d = new Date(date);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function getStreakData() {
+  try {
+    const stored = localStorage.getItem("impactlens_streak");
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (e) {
+    console.warn("Could not read streak data:", e);
+  }
+  return { currentStreak: 0, longestStreak: 0, lastLogDate: null };
+}
+
+function getMotivationalMessage(streak) {
+  if (streak === 0) return "Log an activity to start your streak!";
+  if (streak === 1) return "Great start! Come back tomorrow to keep it going!";
+  if (streak <= 3) return "You're building momentum — keep it up! 💪";
+  if (streak <= 7) return "A full week of impact is within reach! 🌱";
+  if (streak <= 14) return "Incredible consistency — you're a sustainability hero! 🌍";
+  if (streak <= 30) return "Unstoppable! Your dedication is making a real difference! 🏆";
+  return "Legendary streak! You're an environmental champion! 🔥🌟";
+}
+
+function renderStreakWidget(activities) {
+  const streakData = getStreakData();
+  const actualCurrent = streakData.currentStreak || 0;
+  
+  // Enforce 3-day rule for display
+  const displayCurrent = actualCurrent >= 3 ? actualCurrent : 0;
+  
+  // Also only show longest if it's >= 3
+  const longestStreak = streakData.longestStreak || 0;
+  const displayLongest = longestStreak >= 3 ? longestStreak : 0;
+
+  // Update DOM
+  const streakNumber = document.getElementById("streak-current");
+  const streakLongest = document.getElementById("streak-longest");
+  const streakMessage = document.getElementById("streak-message");
+  const streakFlame = document.getElementById("streak-flame");
+
+  if (streakNumber) streakNumber.textContent = displayCurrent;
+  if (streakLongest) streakLongest.textContent = displayLongest;
+  
+  if (streakMessage) {
+    if (actualCurrent === 0) streakMessage.textContent = "Log an activity to start your streak!";
+    else if (actualCurrent === 1) streakMessage.textContent = "Great start! Log for 2 more days to ignite your streak! 🔥";
+    else if (actualCurrent === 2) streakMessage.textContent = "Almost there! 1 more day to unlock your streak! ⏳";
+    else streakMessage.textContent = getMotivationalMessage(displayCurrent);
+  }
+
+  // Apply flame intensity classes
+  if (streakFlame) {
+    streakFlame.classList.remove("active", "blazing");
+    if (displayCurrent >= 7) {
+      streakFlame.classList.add("blazing");
+    } else if (displayCurrent >= 3) {
+      streakFlame.classList.add("active");
+    }
+  }
+
+  // Update label pluralization
+  const streakLabel = document.querySelector(".streak-label");
+  if (streakLabel) {
+    streakLabel.textContent = "day streak";
+  }
+}
+
+// ============================================
+// ACTIVITY CALENDAR (Last 7 Days)
+// ============================================
+
+function renderActivityCalendar(activities) {
+  const container = document.getElementById("calendar-dots");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  // Build a set of dates that have activities
+  const activeDates = new Set();
+  const dateActivityCounts = {};
+  activities.forEach(act => {
+    if (!act || !act.date) return;
+    const dateStr = getDateString(act.date);
+    activeDates.add(dateStr);
+    dateActivityCounts[dateStr] = (dateActivityCounts[dateStr] || 0) + 1;
+  });
+
+  // Generate last 7 days (from 6 days ago to today)
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const dateStr = getDateString(date);
+    const isToday = i === 0;
+    const isActive = activeDates.has(dateStr);
+    const count = dateActivityCounts[dateStr] || 0;
+
+    const dayEl = document.createElement("div");
+    dayEl.className = "calendar-day";
+
+    const dotClasses = ["calendar-dot"];
+    if (isActive) dotClasses.push("active");
+    if (isToday) dotClasses.push("today");
+
+    dayEl.innerHTML = `
+      <span class="calendar-day-name">${dayNames[date.getDay()]}</span>
+      <div class="${dotClasses.join(" ")}"></div>
+      <span class="calendar-day-date">${date.getDate()} ${monthNames[date.getMonth()]}</span>
+      <span class="calendar-day-count ${count > 0 ? 'has-activity' : ''}">${count > 0 ? count + ' log' + (count > 1 ? 's' : '') : '—'}</span>
+    `;
+
+    container.appendChild(dayEl);
+  }
+}
+
+// ============================================
+// TODAY'S IMPACT
+// ============================================
+
+function renderTodayImpact(activities, conversionRates) {
+  const todayStr = getDateString(new Date());
+
+  let todayCount = 0;
+  let todayCO2 = 0;
+
+  activities.forEach(act => {
+    if (!act || !act.date) return;
+    if (getDateString(act.date) === todayStr) {
+      todayCount++;
+      const rateInfo = conversionRates[act.activity];
+      if (rateInfo) {
+        todayCO2 += (parseFloat(act.quantity) || 0) * (parseFloat(rateInfo.rate) || 0);
+      }
+    }
+  });
+
+  const todayActivitiesEl = document.getElementById("today-activities");
+  const todayCO2El = document.getElementById("today-co2");
+
+  if (todayActivitiesEl) todayActivitiesEl.textContent = todayCount;
+  if (todayCO2El) todayCO2El.textContent = todayCO2.toFixed(1);
+}
+
+// ============================================
+// DAILY PROGRESS BAR CHART (Last 7 Days)
+// ============================================
+
+let dailyProgressChartInstance = null;
+
+function renderDailyProgressChart(activities, conversionRates) {
+  const ctx = document.getElementById("dailyProgressChart");
+  if (!ctx) return;
+
+  if (dailyProgressChartInstance) {
+    dailyProgressChartInstance.destroy();
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const labels = [];
+  const dataValues = [];
+
+  // Pre-compute CO2 per date
+  const dateCO2 = {};
+  activities.forEach(act => {
+    if (!act || !act.date) return;
+    const dateStr = getDateString(act.date);
+    const rateInfo = conversionRates[act.activity];
+    const co2 = rateInfo ? (parseFloat(act.quantity) || 0) * (parseFloat(rateInfo.rate) || 0) : 0;
+    dateCO2[dateStr] = (dateCO2[dateStr] || 0) + co2;
+  });
+
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const dateStr = getDateString(date);
+    const dayLabel = dayNames[date.getDay()];
+    const dayDate = `${date.getDate()}/${date.getMonth() + 1}`;
+
+    labels.push(`${dayLabel}\n${dayDate}`);
+    dataValues.push(parseFloat((dateCO2[dateStr] || 0).toFixed(2)));
+  }
+
+  // Create gradient for bars
+  const canvas = ctx;
+  const context = canvas.getContext('2d');
+  const barGradient = context.createLinearGradient(0, 0, 0, 250);
+  barGradient.addColorStop(0, 'rgba(6, 182, 212, 0.85)');
+  barGradient.addColorStop(1, 'rgba(16, 185, 129, 0.65)');
+
+  dailyProgressChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'CO₂ Offset (kg)',
+        data: dataValues,
+        backgroundColor: barGradient,
+        borderColor: 'rgba(6, 182, 212, 0.3)',
+        borderWidth: 1,
+        borderRadius: 8,
+        borderSkipped: false,
+        maxBarThickness: 52
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `${context.parsed.y.toFixed(2)} kg CO₂`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: {
+            padding: 8,
+            font: { size: 10 }
+          }
+        },
+        y: {
+          grid: {
+            color: 'rgba(255, 255, 255, 0.04)',
+            drawBorder: false
+          },
+          ticks: {
+            padding: 10,
+            callback: function(value) {
+              return value + ' kg';
+            }
+          },
+          beginAtZero: true
+        }
+      }
+    }
+  });
 }
