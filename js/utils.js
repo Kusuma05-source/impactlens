@@ -11,13 +11,7 @@ const FALLBACK_DATA = {
     "Electricity Saved": { "rate": 0.45, "unit": "kWh", "co2Unit": "kg CO2e", "category": "Energy", "color": "#F59E0B" },
     "Water Saved": { "rate": 0.002, "unit": "L", "co2Unit": "kg CO2e", "category": "Water", "color": "#06B6D4" }
   },
-  "activities": [
-    { "id": "act-1", "date": "2026-01-02", "activity": "Waste Recycled", "quantity": 120, "unit": "kg", "loggedBy": "Elena Vance", "team": "Lumen" },
-    { "id": "act-2", "date": "2026-01-04", "activity": "Sustainable Meals", "quantity": 80, "unit": "meals", "loggedBy": "Marcus Fenix", "team": "Lumen" },
-    { "id": "act-3", "date": "2026-01-06", "activity": "Distance Biked", "quantity": 80, "unit": "km", "loggedBy": "Kusuma", "team": "Lumen" },
-    { "id": "act-4", "date": "2026-01-08", "activity": "Electricity Saved", "quantity": 230, "unit": "kWh", "loggedBy": "Sarah Connor", "team": "Lumen" },
-    { "id": "act-5", "date": "2026-01-10", "activity": "Water Saved", "quantity": 950, "unit": "L", "loggedBy": "Lumen Leader", "team": "Lumen" }
-  ],
+  "activities": [],
   "leaderboard": [
     { "team": "Lumen", "members": 5, "totalCO2Offset": 332.2 },
     { "team": "EcoWarriors", "members": 6, "totalCO2Offset": 420.5 },
