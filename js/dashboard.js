@@ -19,7 +19,6 @@ let shareChartInstance = null;
 document.addEventListener("DOMContentLoaded", () => {
   setSystemDate();
   loadDashboardData();
-  setupDynamicTips();
 });
 
 // Update the system date dynamically
@@ -32,22 +31,7 @@ function setSystemDate() {
   }
 }
 
-// Select a random green tip and rotate it
-function setupDynamicTips() {
-  const tipElement = document.getElementById("dynamic-tip");
-  if (tipElement) {
-    const setTip = () => {
-      const randomIndex = Math.floor(Math.random() * GREEN_TIPS.length);
-      tipElement.textContent = GREEN_TIPS[randomIndex];
-    };
-    
-    // Set initial tip
-    setTip();
-    
-    // Rotate tip every 12 seconds
-    setInterval(setTip, 12000);
-  }
-}
+
 
 // Main logic to fetch data and render dashboard components
 async function loadDashboardData() {
@@ -96,9 +80,7 @@ async function loadDashboardData() {
   // 4. Render charts
   renderCharts(summary, data.activities, data.conversionRates);
 
-  // 5. Update SDG Section values
-  document.getElementById("sdg12-status").textContent = `Recycled ${(summary.totals["Waste Recycled"] || 0).toFixed(0)}kg waste, saved ${(summary.totals["Water Saved"] || 0).toFixed(0)}L water & logged ${(summary.totals["Sustainable Meals"] || 0).toFixed(0)} meals`;
-  document.getElementById("sdg13-status").textContent = `Avoided ${(summary.totalCO2 || 0).toFixed(1)}kg CO2e emissions`;
+
 }
 
 // Render the metric highlights and update goal meters

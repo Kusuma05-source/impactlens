@@ -170,7 +170,7 @@
 /* Bottom Grid Layout */
 .bottom-grid {
   display: grid;
-  grid-template-columns: 1.8fr 1.2fr;
+  grid-template-columns: 1fr;
   gap: 1.5rem;
   width: 100%;
 }
@@ -262,10 +262,10 @@
   color: #10B981;
 }
 
-.badge-category.forestry {
-  background: rgba(5, 150, 105, 0.08);
-  border-color: rgba(5, 150, 105, 0.2);
-  color: #059669;
+.badge-category.food {
+  background: rgba(244, 63, 94, 0.08);
+  border-color: rgba(244, 63, 94, 0.2);
+  color: #F43F5E;
 }
 
 .badge-category.transport {
