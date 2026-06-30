@@ -7,12 +7,12 @@
       "category": "Waste",
       "color": "#10B981"
     },
-    "Trees Planted": {
-      "rate": 22.0,
-      "unit": "count",
+    "Sustainable Meals": {
+      "rate": 1.50,
+      "unit": "meals",
       "co2Unit": "kg CO2e",
-      "category": "Forestry",
-      "color": "#059669"
+      "category": "Food",
+      "color": "#F43F5E"
     },
     "Distance Biked": {
       "rate": 0.21,
@@ -49,9 +49,9 @@
     {
       "id": "act-2",
       "date": "2026-01-04",
-      "activity": "Trees Planted",
-      "quantity": 15,
-      "unit": "count",
+      "activity": "Sustainable Meals",
+      "quantity": 80,
+      "unit": "meals",
       "loggedBy": "Marcus Fenix",
       "team": "Lumen"
     },
@@ -87,7 +87,7 @@
     {
       "team": "Lumen",
       "members": 5,
-      "totalCO2Offset": 542.2
+      "totalCO2Offset": 332.2
     },
     {
       "team": "EcoWarriors",

@@ -1,7 +1,7 @@
 // Base rates for real-time calculations
 const RATES = {
   "Waste Recycled": { rate: 0.75, unit: "kg" },
-  "Trees Planted": { rate: 22.0, unit: "count" },
+  "Sustainable Meals": { rate: 1.5, unit: "meals" },
   "Distance Biked": { rate: 0.21, unit: "km" },
   "Electricity Saved": { rate: 0.45, unit: "kWh" },
   "Water Saved": { rate: 0.002, unit: "L" }

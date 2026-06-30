@@ -97,7 +97,7 @@ async function loadDashboardData() {
   renderCharts(summary, data.activities, data.conversionRates);
 
   // 5. Update SDG Section values
-  document.getElementById("sdg12-status").textContent = `Recycled ${(summary.totals["Waste Recycled"] || 0).toFixed(0)}kg waste & conserved ${(summary.totals["Water Saved"] || 0).toFixed(0)}L water`;
+  document.getElementById("sdg12-status").textContent = `Recycled ${(summary.totals["Waste Recycled"] || 0).toFixed(0)}kg waste, saved ${(summary.totals["Water Saved"] || 0).toFixed(0)}L water & logged ${(summary.totals["Sustainable Meals"] || 0).toFixed(0)} meals`;
   document.getElementById("sdg13-status").textContent = `Avoided ${(summary.totalCO2 || 0).toFixed(1)}kg CO2e emissions`;
 }
 
@@ -163,7 +163,7 @@ function renderActivityTable(activities, conversionRates) {
     // Category icon mapper
     let iconHTML = '<i class="fa-solid fa-leaf"></i>';
     if (act.activity === "Waste Recycled") iconHTML = '<i class="fa-solid fa-recycle"></i>';
-    if (act.activity === "Trees Planted") iconHTML = '<i class="fa-solid fa-tree"></i>';
+    if (act.activity === "Sustainable Meals") iconHTML = '<i class="fa-solid fa-utensils"></i>';
     if (act.activity === "Distance Biked") iconHTML = '<i class="fa-solid fa-bicycle"></i>';
     if (act.activity === "Electricity Saved") iconHTML = '<i class="fa-solid fa-bolt"></i>';
     if (act.activity === "Water Saved") iconHTML = '<i class="fa-solid fa-droplet"></i>';
@@ -316,7 +316,7 @@ function renderCharts(summary, activities, conversionRates) {
     // Map categories to colors
     const colorMap = {
       "Waste": "#10B981",
-      "Forestry": "#059669",
+      "Food": "#F43F5E",
       "Transport": "#3B82F6",
       "Energy": "#F59E0B",
       "Water": "#06B6D4"

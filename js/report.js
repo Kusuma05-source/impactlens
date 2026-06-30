@@ -140,6 +140,7 @@ async function loadReportData() {
   document.getElementById("doc-energy").textContent = (summary.totals["Electricity Saved"] || 0).toFixed(0);
   document.getElementById("doc-biked").textContent = (summary.totals["Distance Biked"] || 0).toFixed(0);
   document.getElementById("doc-water").textContent = (summary.totals["Water Saved"] || 0).toFixed(0);
+  document.getElementById("doc-food").textContent = (summary.totals["Sustainable Meals"] || 0).toFixed(0);
 
   // Render Table
   populateReportTable(reportActivities, reportConversionRates);
@@ -277,7 +278,7 @@ function renderReportCharts(summary, activities, conversionRates, isLightTheme) 
     
     const colorMap = {
       "Waste": "#10B981",
-      "Forestry": "#059669",
+      "Food": "#F43F5E",
       "Transport": "#3B82F6",
       "Energy": "#F59E0B",
       "Water": "#06B6D4"

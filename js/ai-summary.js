@@ -8,7 +8,7 @@ function compileAIPrompt(summary) {
   return `You are a professional sustainability consultant auditing Team Lumen's environmental data for SDG 12 & 13.
 Analyze these activity logs:
 - Waste Recycled: ${summary.totals["Waste Recycled"].toFixed(0)} kg (Offset: ${summary.categoryOffsets["Waste"].toFixed(1)} kg CO2e)
-- Trees Planted: ${summary.totals["Trees Planted"].toFixed(0)} units (Offset: ${summary.categoryOffsets["Forestry"].toFixed(1)} kg CO2e)
+- Sustainable Meals: ${summary.totals["Sustainable Meals"].toFixed(0)} meals (Offset: ${summary.categoryOffsets["Food"].toFixed(1)} kg CO2e)
 - Distance Biked: ${summary.totals["Distance Biked"].toFixed(0)} km (Offset: ${summary.categoryOffsets["Transport"].toFixed(1)} kg CO2e)
 - Electricity Saved: ${summary.totals["Electricity Saved"].toFixed(0)} kWh (Offset: ${summary.categoryOffsets["Energy"].toFixed(1)} kg CO2e)
 - Water Saved: ${summary.totals["Water Saved"].toFixed(0)} L (Offset: ${summary.categoryOffsets["Water"].toFixed(1)} kg CO2e)
@@ -29,11 +29,11 @@ function generateExecutiveSummaryText(summary) {
   const water = summary.totals["Water Saved"].toFixed(0);
   const energy = summary.totals["Electricity Saved"].toFixed(0);
   const biked = summary.totals["Distance Biked"].toFixed(0);
-  const trees = summary.totals["Trees Planted"].toFixed(0);
+  const meals = summary.totals["Sustainable Meals"].toFixed(0);
   
   // Find highest category
-  let maxCat = "Forestry";
-  let maxOffset = summary.categoryOffsets["Forestry"];
+  let maxCat = "Food";
+  let maxOffset = summary.categoryOffsets["Food"] || 0;
   
   Object.keys(summary.categoryOffsets).forEach(cat => {
     if (summary.categoryOffsets[cat] > maxOffset) {
@@ -43,7 +43,7 @@ function generateExecutiveSummaryText(summary) {
   });
 
   const categoryNameMap = {
-    "Forestry": "Forestry and reforestation",
+    "Food": "Sustainable food consumption",
     "Energy": "Energy conservation",
     "Waste": "Waste diversion",
     "Transport": "Eco-commuting",
@@ -52,11 +52,11 @@ function generateExecutiveSummaryText(summary) {
 
   const maxCatName = categoryNameMap[maxCat] || maxCat;
 
-  return `<strong>Executive Audit Statement:</strong> Team Lumen has demonstrated outstanding progress in carbon emission avoidance during the auditing period, successfully mitigating a cumulative total of <strong>${total} kg CO2e</strong>. These actions directly support <strong>SDG 13 (Climate Action)</strong> and <strong>SDG 12 (Responsible Consumption & Production)</strong>. The primary driver of this reduction was <strong>${maxCatName}</strong>, achieving a substantial offset of <strong>${maxOffset.toFixed(1)} kg CO2e</strong>, largely due to planting <strong>${trees} trees</strong> and saving <strong>${energy} kWh of energy</strong>. 
+  return `<strong>Executive Audit Statement:</strong> Team Lumen has demonstrated outstanding progress in carbon emission avoidance during the auditing period, successfully mitigating a cumulative total of <strong>${total} kg CO2e</strong>. These actions directly support <strong>SDG 13 (Climate Action)</strong> and <strong>SDG 12 (Responsible Consumption & Production)</strong>. The primary driver of this reduction was <strong>${maxCatName}</strong>, achieving a substantial offset of <strong>${maxOffset.toFixed(1)} kg CO2e</strong>, largely due to logging <strong>${meals} sustainable meals</strong> and saving <strong>${energy} kWh of energy</strong>. 
   
   Resource management efforts further yielded significant landfill diversion of <strong>${waste} kg of waste</strong> alongside conserving <strong>${water} Liters of water</strong>. In addition, <strong>${biked} km</strong> logged via bicycle commuting reduced grid transit strain. 
   
-  <blockquote><strong>Recommendation:</strong> While energy and forestry baselines are highly favorable, upgrading recycling guidelines to capture organic compostable materials could improve waste diversion rates by up to 25% next quarter.</blockquote>`;
+  <blockquote><strong>Recommendation:</strong> While energy and sustainable dining baselines are highly favorable, upgrading recycling guidelines to capture organic compostable materials could improve waste diversion rates by up to 25% next quarter.</blockquote>`;
 }
 
 // Simulate the AI compilation steps
