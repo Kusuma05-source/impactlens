@@ -1,0 +1,62 @@
+{
+  "conversionRates": {
+    "Waste Recycled": {
+      "rate": 0.75,
+      "unit": "kg",
+      "co2Unit": "kg CO2e",
+      "category": "Waste",
+      "color": "#10B981"
+    },
+    "Sustainable Meals": {
+      "rate": 1.50,
+      "unit": "meals",
+      "co2Unit": "kg CO2e",
+      "category": "Food",
+      "color": "#F43F5E"
+    },
+    "Distance Biked": {
+      "rate": 0.21,
+      "unit": "km",
+      "co2Unit": "kg CO2e",
+      "category": "Transport",
+      "color": "#3B82F6"
+    },
+    "Electricity Saved": {
+      "rate": 0.45,
+      "unit": "kWh",
+      "co2Unit": "kg CO2e",
+      "category": "Energy",
+      "color": "#F59E0B"
+    },
+    "Water Saved": {
+      "rate": 0.002,
+      "unit": "L",
+      "co2Unit": "kg CO2e",
+      "category": "Water",
+      "color": "#06B6D4"
+    }
+  },
+  "activities": [],
+  "leaderboard": [
+    {
+      "team": "Lumen",
+      "members": 5,
+      "totalCO2Offset": 332.2
+    },
+    {
+      "team": "EcoWarriors",
+      "members": 6,
+      "totalCO2Offset": 420.5
+    },
+    {
+      "team": "GreenTech",
+      "members": 4,
+      "totalCO2Offset": 380.0
+    },
+    {
+      "team": "TerraForce",
+      "members": 5,
+      "totalCO2Offset": 290.4
+    }
+  ]
+}

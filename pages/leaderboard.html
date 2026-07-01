@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard — ImpactLens</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .leaderboard-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 2rem;
+      width: 100%;
+    }
+    
+    @media (max-width: 900px) {
+      .leaderboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .leaderboard-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 2rem;
+    }
+    
+    .leaderboard-card h2 {
+      font-family: var(--font-header);
+      font-size: 1.35rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    
+    .leaderboard-card h2 i {
+      color: #F59E0B; /* Gold trophy color */
+    }
+    
+    .leaderboard-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-md);
+      transition: var(--transition-fast);
+    }
+    
+    .leaderboard-item:hover {
+      border-color: var(--border-hover);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    
+    .leaderboard-item.highlight {
+      background: rgba(16, 185, 129, 0.05);
+      border-color: rgba(16, 185, 129, 0.25);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.08);
+    }
+    
+    .rank-num {
+      font-family: var(--font-header);
+      font-weight: 800;
+      font-size: 1.2rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+    
+    .rank-num.rank-1 {
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      color: #000;
+      border: none;
+      box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+    }
+    
+    .rank-num.rank-2 {
+      background: linear-gradient(135deg, #E2E8F0 0%, #CBD5E1 100%);
+      color: #000;
+      border: none;
+    }
+    
+    .rank-num.rank-3 {
+      background: linear-gradient(135deg, #B45309 0%, #78350F 100%);
+      color: #fff;
+      border: none;
+    }
+    
+    .item-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--bg-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-family: var(--font-header);
+      margin-right: 0.85rem;
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+    
+    .item-info {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    
+    .item-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    
+    .item-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+    
+    .item-score {
+      font-family: var(--font-header);
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--accent-primary);
+      text-align: right;
+    }
+    
+    .item-score span {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: normal;
+      color: var(--text-muted);
+      margin-left: 0.15rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-leaf"></i>
+        </div>
+        <div class="brand-name">Impact<span>Lens</span></div>
+      </div>
+      
+      <nav style="flex-grow: 1;">
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="dashboard.html" id="nav-dashboard">
+              <i class="fa-solid fa-chart-pie"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="form.html" id="nav-form">
+              <i class="fa-solid fa-circle-plus"></i>
+              <span>Log Activity</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="report.html" id="nav-report">
+              <i class="fa-solid fa-file-invoice"></i>
+              <span>Impact Report</span>
+            </a>
+          </li>
+          <li class="nav-item active">
+            <a href="leaderboard.html" id="nav-leaderboard">
+              <i class="fa-solid fa-ranking-star"></i>
+              <span>Leaderboard</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <a href="../index.html" style="text-decoration: none; color: inherit; display: block; margin-bottom: 0.75rem; font-size: 0.85rem; padding-left: 0.75rem; color: var(--text-secondary); transition: var(--transition-fast);" onmouseover="this.style.color='var(--text-primary)'" onmouseout="this.style.color='var(--text-secondary)'">
+          <i class="fa-solid fa-arrow-left-long"></i> Back to Landing
+        </a>
+        <div class="team-card">
+          <div class="team-avatar">L5</div>
+          <div class="team-info">
+            <span class="team-name">Team Lumen</span>
+            <span class="team-role">Sustainability Crew</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content fade-in">
+      
+      <!-- Top Bar -->
+      <section class="top-bar">
+        <div class="page-title-container">
+          <h1 class="page-title">Impact Leaderboards</h1>
+          <p class="page-subtitle">Eco-champions competing to maximize environmental offsets and SDG contributions.</p>
+        </div>
+      </section>
+
+      <!-- Leaderboards Grid -->
+      <section class="leaderboard-grid">
+        <!-- Team Leaderboard -->
+        <div class="glass-card leaderboard-card">
+          <h2><i class="fa-solid fa-trophy"></i> Team Standings</h2>
+          <div class="leaderboard-list" id="team-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Individual Contributors Leaderboard -->
+        <div class="glass-card leaderboard-card">
+          <h2><i class="fa-solid fa-medal" style="color: #CBD5E1;"></i> Contributor Standings (Lumen)</h2>
+          <div class="leaderboard-list" id="user-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+  <script src="../js/utils.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      loadLeaderboardData();
+    });
+
+    async function loadLeaderboardData() {
+      let data = { ...FALLBACK_DATA };
+
+      try {
+        const response = await fetch("../data/sample-data.json");
+        if (response.ok) {
+          data = await response.json();
+        }
+      } catch (err) {}
+
+      // Merge local storage activities
+      try {
+        const storedLocal = localStorage.getItem("impactlens_activities");
+        if (storedLocal) {
+          const localActivities = JSON.parse(storedLocal);
+          if (Array.isArray(localActivities)) {
+            data.activities = [...data.activities, ...localActivities];
+          }
+        }
+      } catch (err) {}
+      data.activities = data.activities || [];
+      data.conversionRates = data.conversionRates || {};
+      data.leaderboard = data.leaderboard || [];
+
+      // 1. Calculate dynamic values for Team Lumen
+      let lumenTotalOffset = 0;
+      const userOffsets = {
+        "Elena Vance": 0,
+        "Marcus Fenix": 0,
+        "Kusuma": 0,
+        "Sarah Connor": 0,
+        "Lumen Leader": 0
+      };
+
+      data.activities.forEach(act => {
+        if (!act || !act.activity) return;
+        const rateInfo = data.conversionRates[act.activity];
+        if (rateInfo) {
+          const qty = parseFloat(act.quantity) || 0;
+          const rate = parseFloat(rateInfo.rate) || 0;
+          const offset = qty * rate;
+          if (act.team === "Lumen") {
+            lumenTotalOffset += offset;
+            
+            // Track individual contributor
+            const loggedBy = act.loggedBy || "Unknown";
+            if (userOffsets[loggedBy] !== undefined) {
+              userOffsets[loggedBy] += offset;
+            } else {
+              userOffsets[loggedBy] = offset;
+            }
+          }
+        }
+      });
+
+      // Update Lumen score in the leaderboard array
+      const teamList = data.leaderboard.map(team => {
+        if (team.team === "Lumen") {
+          return { ...team, totalCO2Offset: lumenTotalOffset };
+        }
+        return team;
+      });
+
+      // Sort teams descending by offset
+      teamList.sort((a, b) => b.totalCO2Offset - a.totalCO2Offset);
+
+      // Render Teams
+      const teamContainer = document.getElementById("team-list");
+      teamContainer.innerHTML = "";
+      
+      teamList.forEach((team, idx) => {
+        const rank = idx + 1;
+        let rankClass = "rank-num";
+        if (rank <= 3) rankClass += ` rank-${rank}`;
+
+        const isLumen = team.team === "Lumen";
+        const itemClass = isLumen ? "leaderboard-item highlight" : "leaderboard-item";
+        
+        const div = document.createElement("div");
+        div.className = itemClass;
+        div.innerHTML = `
+          <div class="${rankClass}">${rank}</div>
+          <div class="item-avatar">${team.team.substring(0, 2).toUpperCase()}</div>
+          <div class="item-info">
+            <span class="item-title">${team.team} ${isLumen ? '<span style="font-size: 0.75rem; background: var(--accent-primary); color: var(--bg-primary); padding: 0.15rem 0.4rem; border-radius: 4px; margin-left: 0.35rem; font-weight: bold;">YOUR TEAM</span>' : ''}</span>
+            <span class="item-subtitle">${team.members} Active Contributors</span>
+          </div>
+          <div class="item-score">${team.totalCO2Offset.toFixed(1)}<span>kg</span></div>
+        `;
+        teamContainer.appendChild(div);
+      });
+
+      // Render Users
+      const userContainer = document.getElementById("user-list");
+      userContainer.innerHTML = "";
+
+      // Convert userOffsets to list and sort
+      const userList = Object.keys(userOffsets).map(name => {
+        return { name: name, offset: userOffsets[name] };
+      });
+      userList.sort((a, b) => b.offset - a.offset);
+
+      userList.forEach((user, idx) => {
+        const rank = idx + 1;
+        let rankClass = "rank-num";
+        if (rank <= 3) rankClass += ` rank-${rank}`;
+
+        // Get Initials
+        const initials = user.name.split(" ").map(n => n[0]).join("");
+
+        const div = document.createElement("div");
+        div.className = "leaderboard-item";
+        div.innerHTML = `
+          <div class="${rankClass}">${rank}</div>
+          <div class="item-avatar" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05); color: var(--text-secondary);">${initials}</div>
+          <div class="item-info">
+            <span class="item-title">${user.name}</span>
+            <span class="item-subtitle">Team Lumen</span>
+          </div>
+          <div class="item-score">${user.offset.toFixed(1)}<span>kg</span></div>
+        `;
+        userContainer.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>
