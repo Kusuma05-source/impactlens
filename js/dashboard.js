@@ -15,10 +15,21 @@ const GREEN_TIPS = [
 
 let trendChartInstance = null;
 let shareChartInstance = null;
+let showAllActivities = false;
+let cachedActivities = [];
+let cachedConversionRates = {};
 
 document.addEventListener("DOMContentLoaded", () => {
   setSystemDate();
   loadDashboardData();
+  
+  const toggleBtn = document.getElementById("btn-toggle-activities");
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      showAllActivities = !showAllActivities;
+      renderActivityTable(cachedActivities, cachedConversionRates);
+    });
+  }
 });
 
 // Update the system date dynamically
@@ -75,7 +86,9 @@ async function loadDashboardData() {
   renderKPICards(summary);
   
   // 3. Render recent activities table
-  renderActivityTable(data.activities, data.conversionRates);
+  cachedActivities = data.activities;
+  cachedConversionRates = data.conversionRates;
+  renderActivityTable(cachedActivities, cachedConversionRates);
   
   // 4. Render charts
   renderCharts(summary, data.activities, data.conversionRates);
@@ -131,15 +144,40 @@ function renderActivityTable(activities, conversionRates) {
   
   tableBody.innerHTML = "";
   
+  const actionsContainer = document.getElementById("table-actions-container");
+  const toggleBtn = document.getElementById("btn-toggle-activities");
+  
   if (activities.length === 0) {
     tableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">No activities logged yet. Get started by clicking "Log Activity"!</td></tr>`;
+    if (actionsContainer) actionsContainer.style.display = "none";
     return;
   }
   
   // Sort activities by date descending
   const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
   
-  sorted.forEach(act => {
+  // Show toggle button if activities exceed 5
+  if (sorted.length > 5) {
+    if (actionsContainer) actionsContainer.style.display = "flex";
+    if (toggleBtn) {
+      const btnText = toggleBtn.querySelector("span");
+      const btnIcon = toggleBtn.querySelector("i");
+      if (showAllActivities) {
+        if (btnText) btnText.textContent = "Show Less";
+        if (btnIcon) btnIcon.className = "fa-solid fa-chevron-up";
+      } else {
+        if (btnText) btnText.textContent = "Show More";
+        if (btnIcon) btnIcon.className = "fa-solid fa-chevron-down";
+      }
+    }
+  } else {
+    if (actionsContainer) actionsContainer.style.display = "none";
+  }
+  
+  // Show either top 5 or all activities
+  const visibleActivities = showAllActivities ? sorted : sorted.slice(0, 5);
+  
+  visibleActivities.forEach(act => {
     if (!act) return;
     const rateInfo = conversionRates[act.activity];
     const categoryClass = rateInfo ? (rateInfo.category || "waste").toLowerCase() : "waste";
