@@ -270,12 +270,14 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .activity-table td {
   padding: 1rem;
   color: var(--text-primary);
   border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  white-space: nowrap;
 }
 
 .activity-table tbody tr {
@@ -439,7 +441,7 @@
 }
 
 /* Responsive Overrides */
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
   .charts-grid {
     grid-template-columns: 1fr;
   }
@@ -827,7 +829,7 @@
 /* ================================================
    ENGAGEMENT RESPONSIVE OVERRIDES
    ================================================ */
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
   .engagement-grid {
     grid-template-columns: 1fr 1fr;
   }

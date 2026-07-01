@@ -8,7 +8,7 @@
   flex-wrap: wrap;
   gap: 1.5rem;
   align-items: flex-end;
-  padding: 1.25rem;
+  padding: 1.5rem;
 }
 
 .control-group {
@@ -227,7 +227,7 @@
   gap: 1.5rem;
 }
 
-@media (max-width: 650px) {
+@media (max-width: 768px) {
   .doc-charts {
     grid-template-columns: 1fr;
   }
@@ -270,12 +270,14 @@
   border-bottom: 2px solid var(--border-color);
   font-size: 0.75rem;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .doc-table td {
   padding: 0.85rem 0.75rem;
   color: var(--text-primary);
   border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  white-space: nowrap;
 }
 
 /* AI Summary Generator UI box */
@@ -429,6 +431,7 @@
 .daily-breakdown-wrapper {
   max-height: 300px;
   overflow-y: auto;
+  overflow-x: auto;
   border-radius: var(--border-radius-md);
 }
 
