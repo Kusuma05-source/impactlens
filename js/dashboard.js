@@ -23,6 +23,28 @@ document.addEventListener("DOMContentLoaded", () => {
   setSystemDate();
   loadDashboardData();
   
+  // Setup Info Modal Logic
+  const infoBtn = document.getElementById("btn-info-co2");
+  const modal = document.getElementById("co2-info-modal");
+  const closeBtn = document.getElementById("btn-close-modal");
+  
+  if (infoBtn && modal && closeBtn) {
+    infoBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+    });
+    
+    closeBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+    
+    // Close on outside click
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+  }
+  
   const toggleBtn = document.getElementById("btn-toggle-activities");
   if (toggleBtn) {
     toggleBtn.addEventListener("click", () => {

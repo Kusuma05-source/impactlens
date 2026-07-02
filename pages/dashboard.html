@@ -161,7 +161,7 @@
           <div class="kpi-body">
             <span class="kpi-value" id="val-co2">0.00</span>
             <span class="kpi-unit">kg CO2e</span>
-            <h3 class="kpi-title">Total CO2 Saved</h3>
+            <h3 class="kpi-title">Total CO2 Saved <i class="fa-solid fa-circle-info" id="btn-info-co2" style="cursor: pointer; color: var(--text-muted); margin-left: 0.25rem; font-size: 0.85rem;" title="How is this calculated?"></i></h3>
           </div>
           <div class="kpi-footer">
             <div class="progress-bar-container">
@@ -302,6 +302,25 @@
       </section>
 
     </main>
+  </div>
+  
+  <!-- Info Modal for CO2 Calculation -->
+  <div id="co2-info-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(9, 13, 22, 0.8); backdrop-filter: blur(5px); z-index: 9999; justify-content: center; align-items: center;">
+    <div class="glass-card" style="max-width: 500px; width: 90%; position: relative;">
+      <button id="btn-close-modal" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-muted); font-size: 1.25rem; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+      <h2 style="font-family: var(--font-header); margin-bottom: 1rem; color: var(--text-primary);"><i class="fa-solid fa-calculator" style="color: var(--accent-primary); margin-right: 0.5rem;"></i>How is this calculated?</h2>
+      <p style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem; font-size: 0.95rem;">Your Total CO₂ Saved is calculated by taking every activity logged by your community and multiplying it by our verified carbon conversion rates.</p>
+      
+      <ul style="list-style: none; color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+        <li><i class="fa-solid fa-recycle" style="color: #10B981; width: 20px;"></i> <strong>Waste Recycled:</strong> 0.75 kg CO₂ per kg</li>
+        <li><i class="fa-solid fa-utensils" style="color: #F43F5E; width: 20px;"></i> <strong>Sustainable Meals:</strong> 1.50 kg CO₂ per meal</li>
+        <li><i class="fa-solid fa-bicycle" style="color: #3B82F6; width: 20px;"></i> <strong>Distance Biked:</strong> 0.21 kg CO₂ per km</li>
+        <li><i class="fa-solid fa-bolt" style="color: #F59E0B; width: 20px;"></i> <strong>Electricity Saved:</strong> 0.45 kg CO₂ per kWh</li>
+        <li><i class="fa-solid fa-droplet" style="color: #06B6D4; width: 20px;"></i> <strong>Water Saved:</strong> 0.002 kg CO₂ per Liter</li>
+      </ul>
+      
+      <p style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">Example: 100 kg of waste recycled × 0.75 = 75 kg of CO₂ offset!</p>
+    </div>
   </div>
 
   <script src="../js/utils.js"></script>
