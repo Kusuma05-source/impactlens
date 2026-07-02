@@ -398,3 +398,27 @@ body {
     justify-content: space-between;
   }
 }
+
+
+/* Eco-Coin Animation */
+@keyframes coinEarnedPulse {
+  0% { transform: scale(1); box-shadow: 0 0 0px gold; }
+  50% { transform: scale(1.15); box-shadow: 0 0 20px gold; }
+  100% { transform: scale(1); box-shadow: 0 0 5px gold; }
+}
+
+.coin-balance-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 5px rgba(255, 215, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.coin-animate {
+  animation: coinEarnedPulse 0.8s ease-out;
+}

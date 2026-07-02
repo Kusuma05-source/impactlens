@@ -73,11 +73,25 @@ Example: [{"activity": "Distance Biked", "quantity": 5}, {"activity": "Waste Rec
       const dd = String(today.getDate()).padStart(2, '0');
       const dateStr = `${yyyy}-${mm}-${dd}`;
       
+      // Update Streak first to ensure accurate coin calculation
+      updateStreakLocal(dateStr);
+      
       activities.forEach(act => {
         // Validate against known activities from utils.js / dashboard.js global
         const convRates = Object.keys(cachedConversionRates).length > 0 ? cachedConversionRates : (typeof FALLBACK_DATA !== "undefined" ? FALLBACK_DATA.conversionRates : {}); if (!convRates[act.activity]) return; const actUnit = convRates[act.activity].unit;
+        const rate = convRates[act.activity].rate || 0;
+        const co2Amount = act.quantity * rate;
+        
+        let currentStreak = 0;
+        try {
+          const storedStreak = localStorage.getItem('impactlens_streak');
+          if (storedStreak) currentStreak = JSON.parse(storedStreak).currentStreak || 0;
+        } catch(e) {}
+        
+        const coinsEarned = typeof calculateEarnedCoins === 'function' ? calculateEarnedCoins(co2Amount, currentStreak) : (co2Amount * 100);
         
         const newActivity = {
+          coinsEarned: coinsEarned,
           id: `act-gemini-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
           date: dateStr,
           activity: act.activity,
@@ -89,9 +103,6 @@ Example: [{"activity": "Distance Biked", "quantity": 5}, {"activity": "Waste Rec
         
         saveActivityLocal(newActivity);
       });
-      
-      // Update Streak
-      updateStreakLocal(dateStr);
       
       // 4. Update UI
       inputEl.value = "";
@@ -126,6 +137,17 @@ function saveActivityLocal(activity) {
     console.error("Error reading from localStorage:", err);
   }
   localLogs.push(activity);
+  
+  // Update totalCoins
+  if (activity.coinsEarned) {
+    let totalCoins = 0;
+    try {
+      totalCoins = parseFloat(localStorage.getItem('impactlens_totalCoins')) || 0;
+    } catch(e) {}
+    totalCoins += activity.coinsEarned;
+    localStorage.setItem('impactlens_totalCoins', totalCoins.toString());
+  }
+  
   try {
     localStorage.setItem("impactlens_activities", JSON.stringify(localLogs));
     console.log("Logged activity successfully stored locally:", activity);

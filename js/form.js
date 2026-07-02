@@ -63,64 +63,20 @@ function setupFormListeners() {
     cb.addEventListener("change", (e) => {
       const category = e.target.value;
       const rateInfo = RATES[category];
-      const parentLabel = e.target.closest('.category-checkbox');
-      
-      if (e.target.checked) {
-        parentLabel.classList.add('selected');
         
-        // Inject input for this category
-        const row = document.createElement('div');
-        row.className = 'dynamic-qty-row';
-        row.id = `qty-row-${category.replace(/\s+/g, '-')}`;
-        row.innerHTML = `
-          <label>${category} Quantity</label>
-          <div class="input-with-unit">
-            <input type="number" data-category="${category}" min="0.1" step="any" placeholder="Enter amount" required>
-            <span class="unit-badge">${rateInfo.unit}</span>
-          </div>
-        `;
-        dynamicContainer.appendChild(row);
+        // Calculate CO2 and Coins
+        const co2Amount = qty * rateInfo.rate;
+        let currentStreak = 0;
+        try {
+          const storedStreak = localStorage.getItem('impactlens_streak');
+          if (storedStreak) currentStreak = JSON.parse(storedStreak).currentStreak || 0;
+        } catch(e) {}
         
-        // Listen to this specific input
-        const inputField = row.querySelector('input');
-        inputField.addEventListener("input", calculateTotalCO2);
-        inputField.focus();
+        // Assume calculateEarnedCoins is available globally from utils.js
+        const coinsEarned = typeof calculateEarnedCoins === 'function' ? calculateEarnedCoins(co2Amount, currentStreak) : (co2Amount * 100);
         
-      } else {
-        parentLabel.classList.remove('selected');
-        const row = document.getElementById(`qty-row-${category.replace(/\s+/g, '-')}`);
-        if (row) {
-          row.remove();
-        }
-      }
-      
-      calculateTotalCO2();
-    });
-  });
-
-  // Handle submit button
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    
-    const date = document.getElementById("act-date").value;
-    const user = document.getElementById("act-user").value.trim();
-    const inputs = dynamicContainer.querySelectorAll('input[type="number"]');
-    
-    if (!date || !user || inputs.length === 0) {
-      alert("Please enter your name and select at least one category to log.");
-      return;
-    }
-    
-    let hasValidQuantity = false;
-    
-    inputs.forEach(input => {
-      const category = input.dataset.category;
-      const qty = parseFloat(input.value);
-      
-      if (!isNaN(qty) && qty > 0) {
-        hasValidQuantity = true;
-        const rateInfo = RATES[category];
         const newActivity = {
+          coinsEarned: coinsEarned,
           // Generate a unique ID for each split activity
           id: `act-local-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
           date: date,
@@ -139,9 +95,6 @@ function setupFormListeners() {
       alert("Please enter a valid quantity for your selected categories.");
       return;
     }
-    
-    // Update streak based on activity date
-    updateStreak(date);
     
     // Redirect back to dashboard
     location.href = "dashboard.html";
@@ -233,6 +186,16 @@ function saveActivityLocal(activity) {
   }
   
   localLogs.push(activity);
+  
+  // Update totalCoins
+  if (activity.coinsEarned) {
+    let totalCoins = 0;
+    try {
+      totalCoins = parseFloat(localStorage.getItem('impactlens_totalCoins')) || 0;
+    } catch(e) {}
+    totalCoins += activity.coinsEarned;
+    localStorage.setItem('impactlens_totalCoins', totalCoins.toString());
+  }
   
   try {
     localStorage.setItem("impactlens_activities", JSON.stringify(localLogs));

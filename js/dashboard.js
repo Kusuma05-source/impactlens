@@ -123,6 +123,9 @@ async function loadDashboardData() {
 
   // 7. Render today's impact summary
   renderTodayImpact(data.activities, data.conversionRates);
+  
+  // 8. Render Coin Balance
+  renderCoinBalance();
 }
 
 
@@ -569,3 +572,31 @@ function renderTodayImpact(activities, conversionRates) {
 // ============================================
 
 
+
+// Global tracker for previous coin balance
+let previousCoinBalance = null;
+
+function renderCoinBalance() {
+  const balanceEl = document.getElementById('coin-balance');
+  const badgeEl = document.getElementById('coin-balance-display');
+  
+  if (!balanceEl || !badgeEl) return;
+  
+  let totalCoins = 0;
+  try {
+    const stored = localStorage.getItem('impactlens_totalCoins');
+    if (stored) totalCoins = parseFloat(stored) || 0;
+  } catch (e) {}
+  
+  // Format for UI
+  balanceEl.textContent = totalCoins.toLocaleString();
+  
+  if (previousCoinBalance !== null && totalCoins > previousCoinBalance) {
+    // Trigger animation
+    badgeEl.classList.remove('coin-animate');
+    void badgeEl.offsetWidth; // trigger reflow
+    badgeEl.classList.add('coin-animate');
+  }
+  
+  previousCoinBalance = totalCoins;
+}

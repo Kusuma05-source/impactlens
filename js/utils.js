@@ -82,3 +82,16 @@ function calculateSustainabilityMetrics(data) {
     totalCO2
   };
 }
+
+/**
+ * Calculates Eco-Coins earned from CO2 offset.
+ * Base: 1 kg CO2e = 100 Eco-Coins.
+ * Multiplier: 1.5x if streak >= 3.
+ */
+function calculateEarnedCoins(co2Amount, currentStreak) {
+  const baseCoins = co2Amount * 100;
+  if (currentStreak >= 3) {
+    return baseCoins * 1.5;
+  }
+  return baseCoins;
+}
