@@ -9,14 +9,14 @@
   <style>
     .leaderboard-grid {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 1fr;
       gap: 2rem;
       width: 100%;
     }
     
-    @media (max-width: 900px) {
+    @media (min-width: 1024px) {
       .leaderboard-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 350px 1fr;
       }
     }
     
@@ -62,9 +62,9 @@
     }
     
     .leaderboard-item.highlight {
-      background: rgba(16, 185, 129, 0.05);
-      border-color: rgba(16, 185, 129, 0.25);
-      box-shadow: 0 0 15px rgba(16, 185, 129, 0.08);
+      background: rgba(115, 126, 27, 0.05);
+      border-color: rgba(115, 126, 27, 0.25);
+      box-shadow: 0 0 15px rgba(115, 126, 27, 0.08);
     }
     
     .rank-num {
@@ -149,6 +149,130 @@
       color: var(--text-muted);
       margin-left: 0.15rem;
     }
+
+    /* Player Cards Design */
+    .player-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .player-card {
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: var(--border-radius-lg);
+      padding: 1.5rem;
+      box-shadow: 4px 4px 0px var(--border-color);
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    
+    .player-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px var(--border-color);
+    }
+    
+    .player-card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+    
+    .player-rank {
+      font-family: var(--font-header);
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      width: 40px;
+      margin-right: 1rem;
+    }
+    
+    .player-card:nth-child(1) .player-rank {
+      color: #F59E0B;
+    }
+    
+    .player-card:nth-child(2) .player-rank {
+      color: #94A3B8;
+    }
+    
+    .player-card:nth-child(3) .player-rank {
+      color: #B45309;
+    }
+    
+    .player-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.25rem;
+      font-family: var(--font-header);
+      border: 2px solid var(--border-color);
+      margin-right: 1rem;
+    }
+    
+    .player-info {
+      flex-grow: 1;
+    }
+    
+    .player-name {
+      font-family: var(--font-header);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .player-team {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    .player-score-container {
+      text-align: right;
+    }
+    
+    .player-score {
+      font-family: var(--font-header);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent-primary);
+    }
+    
+    .player-score span {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    
+    .player-highlight {
+      background: var(--bg-primary);
+      padding: 1rem 1.25rem;
+      border-radius: var(--border-radius-md);
+      color: var(--text-primary);
+      border-left: 4px solid var(--accent-primary);
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    
+    .player-highlight i {
+      color: var(--accent-primary);
+      margin-top: 0.2rem;
+    }
+    
+    .loading-highlight {
+      opacity: 0.6;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -229,10 +353,10 @@
         </div>
 
         <!-- Individual Contributors Leaderboard -->
-        <div class="glass-card leaderboard-card">
-          <h2><i class="fa-solid fa-medal" style="color: #CBD5E1;"></i> Contributor Standings (Lumen)</h2>
-          <div class="leaderboard-list" id="user-list">
-            <!-- Populated dynamically -->
+        <div class="">
+          <h2 style="font-family: var(--font-header); font-size: 1.75rem; font-weight: 800; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;"><i class="fa-solid fa-medal" style="color: var(--accent-primary);"></i> Top Contributors (Lumen)</h2>
+          <div class="player-feed" id="user-list">
+            <!-- Populated dynamically via JS -->
           </div>
         </div>
       </section>
@@ -240,135 +364,6 @@
     </main>
   </div>
   <script src="../js/utils.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      loadLeaderboardData();
-    });
-
-    async function loadLeaderboardData() {
-      let data = { ...FALLBACK_DATA };
-
-      try {
-        const response = await fetch("../data/sample-data.json");
-        if (response.ok) {
-          data = await response.json();
-        }
-      } catch (err) {}
-
-      // Merge local storage activities
-      try {
-        const storedLocal = localStorage.getItem("impactlens_activities");
-        if (storedLocal) {
-          const localActivities = JSON.parse(storedLocal);
-          if (Array.isArray(localActivities)) {
-            data.activities = [...data.activities, ...localActivities];
-          }
-        }
-      } catch (err) {}
-      data.activities = data.activities || [];
-      data.conversionRates = data.conversionRates || {};
-      data.leaderboard = data.leaderboard || [];
-
-      // 1. Calculate dynamic values for Team Lumen
-      let lumenTotalOffset = 0;
-      const userOffsets = {
-        "Elena Vance": 0,
-        "Marcus Fenix": 0,
-        "Kusuma": 0,
-        "Sarah Connor": 0,
-        "Lumen Leader": 0
-      };
-
-      data.activities.forEach(act => {
-        if (!act || !act.activity) return;
-        const rateInfo = data.conversionRates[act.activity];
-        if (rateInfo) {
-          const qty = parseFloat(act.quantity) || 0;
-          const rate = parseFloat(rateInfo.rate) || 0;
-          const offset = qty * rate;
-          if (act.team === "Lumen") {
-            lumenTotalOffset += offset;
-            
-            // Track individual contributor
-            const loggedBy = act.loggedBy || "Unknown";
-            if (userOffsets[loggedBy] !== undefined) {
-              userOffsets[loggedBy] += offset;
-            } else {
-              userOffsets[loggedBy] = offset;
-            }
-          }
-        }
-      });
-
-      // Update Lumen score in the leaderboard array
-      const teamList = data.leaderboard.map(team => {
-        if (team.team === "Lumen") {
-          return { ...team, totalCO2Offset: lumenTotalOffset };
-        }
-        return team;
-      });
-
-      // Sort teams descending by offset
-      teamList.sort((a, b) => b.totalCO2Offset - a.totalCO2Offset);
-
-      // Render Teams
-      const teamContainer = document.getElementById("team-list");
-      teamContainer.innerHTML = "";
-      
-      teamList.forEach((team, idx) => {
-        const rank = idx + 1;
-        let rankClass = "rank-num";
-        if (rank <= 3) rankClass += ` rank-${rank}`;
-
-        const isLumen = team.team === "Lumen";
-        const itemClass = isLumen ? "leaderboard-item highlight" : "leaderboard-item";
-        
-        const div = document.createElement("div");
-        div.className = itemClass;
-        div.innerHTML = `
-          <div class="${rankClass}">${rank}</div>
-          <div class="item-avatar">${team.team.substring(0, 2).toUpperCase()}</div>
-          <div class="item-info">
-            <span class="item-title">${team.team} ${isLumen ? '<span style="font-size: 0.75rem; background: var(--accent-primary); color: var(--bg-primary); padding: 0.15rem 0.4rem; border-radius: 4px; margin-left: 0.35rem; font-weight: bold;">YOUR TEAM</span>' : ''}</span>
-            <span class="item-subtitle">${team.members} Active Contributors</span>
-          </div>
-          <div class="item-score">${team.totalCO2Offset.toFixed(1)}<span>kg</span></div>
-        `;
-        teamContainer.appendChild(div);
-      });
-
-      // Render Users
-      const userContainer = document.getElementById("user-list");
-      userContainer.innerHTML = "";
-
-      // Convert userOffsets to list and sort
-      const userList = Object.keys(userOffsets).map(name => {
-        return { name: name, offset: userOffsets[name] };
-      });
-      userList.sort((a, b) => b.offset - a.offset);
-
-      userList.forEach((user, idx) => {
-        const rank = idx + 1;
-        let rankClass = "rank-num";
-        if (rank <= 3) rankClass += ` rank-${rank}`;
-
-        // Get Initials
-        const initials = user.name.split(" ").map(n => n[0]).join("");
-
-        const div = document.createElement("div");
-        div.className = "leaderboard-item";
-        div.innerHTML = `
-          <div class="${rankClass}">${rank}</div>
-          <div class="item-avatar" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05); color: var(--text-secondary);">${initials}</div>
-          <div class="item-info">
-            <span class="item-title">${user.name}</span>
-            <span class="item-subtitle">Team Lumen</span>
-          </div>
-          <div class="item-score">${user.offset.toFixed(1)}<span>kg</span></div>
-        `;
-        userContainer.appendChild(div);
-      });
-    }
-  </script>
+  <script src="../js/leaderboard.js"></script>
 </body>
 </html>
