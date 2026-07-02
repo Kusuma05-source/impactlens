@@ -392,6 +392,166 @@
   font-style: italic;
 }
 
+.ai-fallback-note {
+  font-size: 0.82rem;
+  color: var(--accent-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.ai-verified-figures {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.ai-verified-figures strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+}
+
+.ai-figures-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.ai-figures-table td {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.ai-figures-table td:last-child {
+  text-align: right;
+}
+
+/* AI Fact-Check Panel */
+.fact-check-panel {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.fact-check-panel.hidden {
+  display: none;
+}
+
+.fact-check-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.fact-check-header h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-header);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.fact-check-header h4 i {
+  color: var(--accent-secondary);
+}
+
+.fact-check-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.fact-check-badge--verified {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.fact-check-badge--partial {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.fact-check-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.fact-check-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 0.25rem 0.75rem;
+  padding: 0.75rem;
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.fact-check-item--verified {
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.fact-check-item--flagged {
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.fact-check-item__status {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  grid-row: span 2;
+}
+
+.fact-check-item--verified .fact-check-item__status {
+  color: #10B981;
+}
+
+.fact-check-item--flagged .fact-check-item__status {
+  color: #ef4444;
+}
+
+.fact-check-item__label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.fact-check-item__values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  font-size: 0.8rem;
+}
+
+.fact-check-item__cited strong,
+.fact-check-item__actual strong {
+  color: var(--text-primary);
+}
+
+.fact-check-item__actual {
+  color: var(--text-muted);
+}
+
 /* Signatures & Stamps */
 .doc-footer {
   margin-top: 2rem;

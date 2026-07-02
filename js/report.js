@@ -71,16 +71,10 @@ function setupReportControls() {
         const output = document.getElementById("ai-summary-output");
         const prompt = document.getElementById("prompt-text");
         
-        // Lock controls during simulation
         toggleControlsLock(true);
-        
-        // Pass a callback to restore controls when simulation finishes
-        triggerAISimulation(reportData, output, prompt, btnAI);
-        
-        // Release controls after the simulation concludes (approx 3.6s + fade in)
-        setTimeout(() => {
+        triggerAISummary(reportData, output, prompt, btnAI).finally(() => {
           toggleControlsLock(false);
-        }, 4000);
+        });
       }
     });
   }
