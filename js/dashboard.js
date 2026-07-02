@@ -101,9 +101,6 @@ async function loadDashboardData() {
 
   // 7. Render today's impact summary
   renderTodayImpact(data.activities, data.conversionRates);
-
-  // 8. Render daily progress bar chart (last 7 days)
-  renderDailyProgressChart(data.activities, data.conversionRates);
 }
 
 
@@ -549,101 +546,4 @@ function renderTodayImpact(activities, conversionRates) {
 // DAILY PROGRESS BAR CHART (Last 7 Days)
 // ============================================
 
-let dailyProgressChartInstance = null;
 
-function renderDailyProgressChart(activities, conversionRates) {
-  const ctx = document.getElementById("dailyProgressChart");
-  if (!ctx) return;
-
-  if (dailyProgressChartInstance) {
-    dailyProgressChartInstance.destroy();
-  }
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-  const labels = [];
-  const dataValues = [];
-
-  // Pre-compute CO2 per date
-  const dateCO2 = {};
-  activities.forEach(act => {
-    if (!act || !act.date) return;
-    const dateStr = getDateString(act.date);
-    const rateInfo = conversionRates[act.activity];
-    const co2 = rateInfo ? (parseFloat(act.quantity) || 0) * (parseFloat(rateInfo.rate) || 0) : 0;
-    dateCO2[dateStr] = (dateCO2[dateStr] || 0) + co2;
-  });
-
-  for (let i = 6; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    const dateStr = getDateString(date);
-    const dayLabel = dayNames[date.getDay()];
-    const dayDate = `${date.getDate()}/${date.getMonth() + 1}`;
-
-    labels.push(`${dayLabel}\n${dayDate}`);
-    dataValues.push(parseFloat((dateCO2[dateStr] || 0).toFixed(2)));
-  }
-
-  // Create gradient for bars
-  const canvas = ctx;
-  const context = canvas.getContext('2d');
-  const barGradient = context.createLinearGradient(0, 0, 0, 250);
-  barGradient.addColorStop(0, 'rgba(6, 182, 212, 0.85)');
-  barGradient.addColorStop(1, 'rgba(16, 185, 129, 0.65)');
-
-  dailyProgressChartInstance = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'CO₂ Offset (kg)',
-        data: dataValues,
-        backgroundColor: barGradient,
-        borderColor: 'rgba(6, 182, 212, 0.3)',
-        borderWidth: 1,
-        borderRadius: 8,
-        borderSkipped: false,
-        maxBarThickness: 52
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              return `${context.parsed.y.toFixed(2)} kg CO₂`;
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          grid: { display: false },
-          ticks: {
-            padding: 8,
-            font: { size: 10 }
-          }
-        },
-        y: {
-          grid: {
-            color: 'rgba(255, 255, 255, 0.04)',
-            drawBorder: false
-          },
-          ticks: {
-            padding: 10,
-            callback: function(value) {
-              return value + ' kg';
-            }
-          },
-          beginAtZero: true
-        }
-      }
-    }
-  });
-}
