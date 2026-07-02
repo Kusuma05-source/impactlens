@@ -101,35 +101,39 @@
                 <!-- Activity Member -->
                 <div class="form-group">
                   <label for="act-user"><i class="fa-solid fa-user"></i> Logged By</label>
-                  <select id="act-user" required>
-                    <option value="Kusuma">Kusuma</option>
-                    <option value="Lumen Leader">Lumen Leader</option>
-                    <option value="Elena Vance">Elena Vance</option>
-                    <option value="Marcus Fenix">Marcus Fenix</option>
-                    <option value="Sarah Connor">Sarah Connor</option>
-                  </select>
+                  <input type="text" id="act-user" placeholder="Enter your name" required>
                 </div>
 
-                <!-- Category Selection -->
-                <div class="form-group">
-                  <label for="act-category"><i class="fa-solid fa-tags"></i> Category</label>
-                  <select id="act-category" required>
-                    <option value="" disabled selected>Select category...</option>
-                    <option value="Waste Recycled">Waste Diverted (SDG 12)</option>
-                    <option value="Sustainable Meals">Sustainable Diet (SDG 12)</option>
-                    <option value="Distance Biked">Eco-Commuting (SDG 13)</option>
-                    <option value="Electricity Saved">Energy Conserved (SDG 12)</option>
-                    <option value="Water Saved">Water Conserved (SDG 12)</option>
-                  </select>
-                </div>
-
-                <!-- Quantity Input -->
-                <div class="form-group">
-                  <label for="act-qty"><i class="fa-solid fa-calculator"></i> Quantity</label>
-                  <div class="input-with-unit">
-                    <input type="number" id="act-qty" min="0.1" step="any" placeholder="Enter amount" required disabled>
-                    <span id="unit-indicator" class="unit-badge">--</span>
+                <!-- Category Selection Grid -->
+                <div class="form-group" style="grid-column: span 2;">
+                  <label><i class="fa-solid fa-tags"></i> Select Categories</label>
+                  <div class="category-checkbox-grid" id="category-checkbox-grid">
+                    <label class="category-checkbox">
+                      <input type="checkbox" value="Waste Recycled">
+                      <i class="fa-solid fa-recycle" style="color: #10B981;"></i> Waste Diverted
+                    </label>
+                    <label class="category-checkbox">
+                      <input type="checkbox" value="Sustainable Meals">
+                      <i class="fa-solid fa-utensils" style="color: #F43F5E;"></i> Sustainable Diet
+                    </label>
+                    <label class="category-checkbox">
+                      <input type="checkbox" value="Distance Biked">
+                      <i class="fa-solid fa-bicycle" style="color: #3B82F6;"></i> Eco-Commuting
+                    </label>
+                    <label class="category-checkbox">
+                      <input type="checkbox" value="Electricity Saved">
+                      <i class="fa-solid fa-bolt" style="color: #F59E0B;"></i> Energy Conserved
+                    </label>
+                    <label class="category-checkbox">
+                      <input type="checkbox" value="Water Saved">
+                      <i class="fa-solid fa-droplet" style="color: #06B6D4;"></i> Water Conserved
+                    </label>
                   </div>
+                </div>
+
+                <!-- Dynamic Quantity Container -->
+                <div id="dynamic-quantities" style="grid-column: span 2; display: flex; flex-direction: column; gap: 1rem;">
+                  <!-- Quantity inputs will be injected here by JS -->
                 </div>
 
               </div>

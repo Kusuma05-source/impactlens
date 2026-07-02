@@ -24,72 +24,121 @@ function initFormDate() {
   }
 }
 
-// Wire up dropdown and input listeners
+// Wire up checkbox and input listeners
 function setupFormListeners() {
-  const categorySelect = document.getElementById("act-category");
-  const qtyInput = document.getElementById("act-qty");
-  const unitIndicator = document.getElementById("unit-indicator");
+  const checkboxes = document.querySelectorAll('.category-checkbox input[type="checkbox"]');
+  const dynamicContainer = document.getElementById("dynamic-quantities");
   const previewCO2 = document.getElementById("preview-co2");
   const submitBtn = document.getElementById("btn-submit");
   const form = document.getElementById("activity-form");
 
-  if (!categorySelect || !qtyInput || !unitIndicator || !previewCO2 || !submitBtn || !form) return;
+  if (!dynamicContainer || !previewCO2 || !submitBtn || !form) return;
 
-  // 1. Listen for category changes
-  categorySelect.addEventListener("change", () => {
-    const selection = categorySelect.value;
-    const rateInfo = RATES[selection];
+  function calculateTotalCO2() {
+    let total = 0;
+    let hasValidQuantity = false;
+    const inputs = dynamicContainer.querySelectorAll('input[type="number"]');
     
-    if (rateInfo) {
-      unitIndicator.textContent = rateInfo.unit;
-      qtyInput.disabled = false;
-      qtyInput.focus();
+    inputs.forEach(input => {
+      const cat = input.dataset.category;
+      const qty = parseFloat(input.value);
+      if (!isNaN(qty) && qty > 0) {
+        hasValidQuantity = true;
+        if (RATES[cat]) {
+          total += qty * RATES[cat].rate;
+        }
+      }
+    });
+    
+    previewCO2.textContent = total.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    
+    // Enable submit if at least one valid quantity exists
+    submitBtn.disabled = !hasValidQuantity;
+  }
+
+  checkboxes.forEach(cb => {
+    cb.addEventListener("change", (e) => {
+      const category = e.target.value;
+      const rateInfo = RATES[category];
+      const parentLabel = e.target.closest('.category-checkbox');
       
-      // Keep calculation updated
-      updateImpactPreview(qtyInput.value, rateInfo.rate, previewCO2);
-      validateForm(categorySelect.value, qtyInput.value, submitBtn);
-    }
+      if (e.target.checked) {
+        parentLabel.classList.add('selected');
+        
+        // Inject input for this category
+        const row = document.createElement('div');
+        row.className = 'dynamic-qty-row';
+        row.id = `qty-row-${category.replace(/\s+/g, '-')}`;
+        row.innerHTML = `
+          <label>${category} Quantity</label>
+          <div class="input-with-unit">
+            <input type="number" data-category="${category}" min="0.1" step="any" placeholder="Enter amount" required>
+            <span class="unit-badge">${rateInfo.unit}</span>
+          </div>
+        `;
+        dynamicContainer.appendChild(row);
+        
+        // Listen to this specific input
+        const inputField = row.querySelector('input');
+        inputField.addEventListener("input", calculateTotalCO2);
+        inputField.focus();
+        
+      } else {
+        parentLabel.classList.remove('selected');
+        const row = document.getElementById(`qty-row-${category.replace(/\s+/g, '-')}`);
+        if (row) {
+          row.remove();
+        }
+      }
+      
+      calculateTotalCO2();
+    });
   });
 
-  // 2. Listen for quantity input changes
-  qtyInput.addEventListener("input", () => {
-    const selection = categorySelect.value;
-    const rateInfo = RATES[selection];
-    
-    if (rateInfo) {
-      updateImpactPreview(qtyInput.value, rateInfo.rate, previewCO2);
-    }
-    
-    validateForm(categorySelect.value, qtyInput.value, submitBtn);
-  });
-
-  // 3. Handle submit button
+  // Handle submit button
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     
-    const category = categorySelect.value;
-    const qty = parseFloat(qtyInput.value);
     const date = document.getElementById("act-date").value;
-    const user = document.getElementById("act-user").value;
+    const user = document.getElementById("act-user").value.trim();
+    const inputs = dynamicContainer.querySelectorAll('input[type="number"]');
     
-    if (!category || isNaN(qty) || qty <= 0 || !date || !user) {
-      alert("Please fill out all fields correctly.");
+    if (!date || !user || inputs.length === 0) {
+      alert("Please enter your name and select at least one category to log.");
       return;
     }
+    
+    let hasValidQuantity = false;
+    
+    inputs.forEach(input => {
+      const category = input.dataset.category;
+      const qty = parseFloat(input.value);
+      
+      if (!isNaN(qty) && qty > 0) {
+        hasValidQuantity = true;
+        const rateInfo = RATES[category];
+        const newActivity = {
+          // Generate a unique ID for each split activity
+          id: `act-local-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          date: date,
+          activity: category,
+          quantity: qty,
+          unit: rateInfo.unit,
+          loggedBy: user,
+          team: "Lumen"
+        };
+        // Save each individually
+        saveActivityLocal(newActivity);
+      }
+    });
 
-    const rateInfo = RATES[category];
-    const newActivity = {
-      id: `act-local-${Date.now()}`,
-      date: date,
-      activity: category,
-      quantity: qty,
-      unit: rateInfo.unit,
-      loggedBy: user,
-      team: "Lumen"
-    };
-
-    // Save to local storage
-    saveActivityLocal(newActivity);
+    if (!hasValidQuantity) {
+      alert("Please enter a valid quantity for your selected categories.");
+      return;
+    }
     
     // Update streak based on activity date
     updateStreak(date);
@@ -97,31 +146,6 @@ function setupFormListeners() {
     // Redirect back to dashboard
     location.href = "dashboard.html";
   });
-}
-
-// Calculate and show impact preview
-function updateImpactPreview(qtyString, rate, displayElement) {
-  const qty = parseFloat(qtyString);
-  if (isNaN(qty) || qty <= 0) {
-    displayElement.textContent = "0.00";
-    return;
-  }
-  
-  const calculated = qty * rate;
-  displayElement.textContent = calculated.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
-
-// Form validation check
-function validateForm(category, qtyString, btn) {
-  const qty = parseFloat(qtyString);
-  if (category && !isNaN(qty) && qty > 0) {
-    btn.disabled = false;
-  } else {
-    btn.disabled = true;
-  }
 }
 
 // ============================================
