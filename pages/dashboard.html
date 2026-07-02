@@ -89,6 +89,21 @@
           </a>
         </div>
       </section>
+      <!-- New Gamified Gen-Z Hero Section -->
+      <section class="log-moves-section" style="margin-top: 2rem; text-align: center;">
+        <h2 style="font-family: var(--font-header); font-size: 2.5rem; margin-bottom: 1rem;">What sustainable moves did you make today?</h2>
+        <textarea id="quick-log-input" placeholder="e.g. Biked 5km, recycled 3 plastic bottles..." style="width: 100%; max-width: 800px; height: 150px; padding: 1.5rem; font-size: 1.2rem; border-radius: 12px; border: 2px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); resize: none; margin-bottom: 1rem; box-shadow: 4px 4px 0px var(--border-color); font-family: var(--font-body);"></textarea>
+        <div>
+           <button class="btn-primary" style="font-size: 1.2rem; padding: 1rem 2.5rem; margin: 0 auto; border-radius: 8px;" onclick="location.href='form.html'">Log My Moves <i class="fa-solid fa-bolt"></i></button>
+        </div>
+      </section>
+
+      <section class="impact-toggle-section" style="margin-top: 4rem; text-align: center;">
+        <button id="toggle-impact-btn" style="font-size: 1.1rem; padding: 0.75rem 2rem; background: var(--bg-card); border: 2px solid var(--border-color); color: var(--text-primary); cursor: pointer; border-radius: 8px; font-weight: bold; box-shadow: 2px 2px 0px var(--border-color);">View 'My Impact' <i class="fa-solid fa-chevron-down"></i></button>
+      </section>
+
+      <div id="my-impact-section" style="display: none; margin-top: 2rem;">
+
 
       <!-- Streak & Activity Calendar Row -->
       <section class="engagement-grid">
@@ -301,7 +316,22 @@
 
       </section>
 
-    </main>
+    
+      </div>
+
+      <script>
+        document.getElementById('toggle-impact-btn').addEventListener('click', function() {
+          var section = document.getElementById('my-impact-section');
+          if (section.style.display === 'none') {
+            section.style.display = 'block';
+            this.innerHTML = 'Hide \'My Impact\' <i class="fa-solid fa-chevron-up"></i>';
+          } else {
+            section.style.display = 'none';
+            this.innerHTML = 'View \'My Impact\' <i class="fa-solid fa-chevron-down"></i>';
+          }
+        });
+      </script>
+</main>
   </div>
   
   <!-- Info Modal for CO2 Calculation -->

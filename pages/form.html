@@ -75,15 +75,7 @@
         </div>
       </section>
 
-      <!-- Tab Navigation -->
-      <div class="form-tabs">
-        <button class="form-tab active" data-tab="tab-single">
-          <i class="fa-solid fa-pen-to-square"></i> Single Entry
-        </button>
-        <button class="form-tab" data-tab="tab-bulk">
-          <i class="fa-solid fa-file-csv"></i> Bulk CSV Import
-        </button>
-      </div>
+      
 
       <!-- Tab Content: Single Entry -->
       <section class="tab-content active" id="tab-single">
@@ -209,95 +201,7 @@
         </div>
       </section>
 
-      <!-- Tab Content: Bulk CSV Import -->
-      <section class="tab-content" id="tab-bulk">
-        <div class="form-container-card">
-          <div class="glass-card form-card bulk-upload-card">
-
-            <!-- Daily Upload Info -->
-            <div class="daily-upload-info" style="margin-bottom: 1rem; color: var(--text-secondary); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; justify-content: center; background: rgba(255,255,255,0.02); padding: 0.5rem 1rem; border-radius: 50px;">
-              <i class="fa-solid fa-calendar-day" style="color: var(--accent-primary);"></i> Uploading daily batch for: <strong id="bulk-upload-date" style="color: var(--text-primary);">Today</strong>
-            </div>
-
-            <!-- Upload Zone -->
-            <div class="upload-zone" id="upload-zone">
-              <input type="file" id="csv-file-input" accept=".csv" hidden>
-              <div class="upload-zone-icon">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-              </div>
-              <h3 class="upload-zone-title">Drag & Drop your CSV file here</h3>
-              <p class="upload-zone-subtitle">or <span class="upload-browse-link">browse</span> to choose a file</p>
-              <p class="upload-zone-hint">Accepted format: .csv — Required columns: Activity, Quantity, Logged By</p>
-            </div>
-
-            <!-- Download Template -->
-            <div class="upload-actions-row">
-              <button type="button" class="btn-secondary btn-template" id="btn-download-template">
-                <i class="fa-solid fa-download"></i> Download Template
-              </button>
-              <span class="upload-file-name" id="upload-file-name"></span>
-            </div>
-
-            <!-- CSV Preview / Error Area -->
-            <div id="csv-preview" class="csv-preview"></div>
-
-            <!-- Import Button -->
-            <div class="form-actions">
-              <button type="button" class="btn-secondary" onclick="location.href='dashboard.html'">
-                Cancel
-              </button>
-              <button type="button" class="btn-primary btn-import" id="btn-import-all" disabled>
-                <i class="fa-solid fa-file-import"></i> Import All
-              </button>
-            </div>
-
-          </div>
-
-          <!-- Bulk upload helper panel -->
-          <div class="glass-card context-panel">
-            <h3>CSV Import Guide</h3>
-            <p class="context-desc">Upload multiple activity logs at once using a properly formatted CSV file.</p>
-
-            <ul class="rates-list">
-              <li>
-                <span class="rate-icon"><i class="fa-solid fa-table-columns" style="color: #10B981;"></i></span>
-                <div class="rate-details">
-                  <strong>Required Columns</strong>
-                  <span>Activity, Quantity, Logged By</span>
-                </div>
-              </li>
-              <li>
-                <span class="rate-icon"><i class="fa-solid fa-calendar-check" style="color: #3B82F6;"></i></span>
-                <div class="rate-details">
-                  <strong>Date Tracking</strong>
-                  <span>Auto-stamped with today's date</span>
-                </div>
-              </li>
-              <li>
-                <span class="rate-icon"><i class="fa-solid fa-tags" style="color: #F59E0B;"></i></span>
-                <div class="rate-details">
-                  <strong>Valid Activities</strong>
-                  <span>Distance Biked, Waste Recycled, Electricity Saved, Water Saved, Sustainable Meals</span>
-                </div>
-              </li>
-              <li>
-                <span class="rate-icon"><i class="fa-solid fa-hashtag" style="color: #F43F5E;"></i></span>
-                <div class="rate-details">
-                  <strong>Quantity</strong>
-                  <span>Positive number (units are auto-assigned)</span>
-                </div>
-              </li>
-              <li>
-                <span class="rate-icon"><i class="fa-solid fa-user-check" style="color: #06B6D4;"></i></span>
-                <div class="rate-details">
-                  <strong>Logged By</strong>
-                  <span>Any non-empty team member name</span>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
+      
 
     </main>
   </div>
